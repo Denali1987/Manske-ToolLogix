@@ -1,0 +1,272 @@
+body {
+    font-family: "Lato", sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    background-color: white;
+
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+ 
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.assets {
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.assets__input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #777;
+    border-radius: 4px;
+}
+
+.assets__button {
+    margin-top: 12px;
+    padding: 10px 24px;
+}
+
+.navbar-logo {
+    height: 60px;
+    width: auto;
+    display: block;
+}
+
+.navbar-icon {
+    width: 38px;
+    height: 38px;
+    opacity: 0.78;
+    filter: drop-shadow(0 0 2px rgba(225, 25, 45, 0.35));
+    transition: 0.2s ease;
+}
+
+
+
+.nav-link:hover .nav-icon,
+.nav-link.active .nav-icon {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: brightness(1.15) drop-shadow(0 0 6px rgba(225, 25, 45, 0.9));
+}
+
+/* ==============================
+   ToolLogix side navigation
+   ============================== */
+
+:root {
+    --sidenav-width: 280px;
+    --sidenav-background: #10151c;
+    --sidenav-accent: #e32636;
+    --sidenav-text: #e8edf2;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/* Collapsible side panel */
+.sidenav {
+    position: fixed;
+    z-index: 1030;
+    top: 0;
+    left: 0;
+
+    width: 0;
+    height: 100vh;
+
+    background-color: var(--sidenav-background);
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.35);
+
+    transition: width 0.35s ease;
+}
+
+/* Applied by JavaScript when open */
+.sidenav.sidenav--open {
+    width: var(--sidenav-width);
+}
+
+.sidenav__header {
+    min-width: var(--sidenav-width);
+    min-height: 100px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 14px 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidenav__logo {
+    display: block;
+}
+
+.sidenav__logo-image {
+    display: block;
+    width: 190px;
+    height: auto;
+}
+
+.sidenav__close {
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+
+    padding: 0 8px;
+    font-size: 36px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.sidenav__close:hover,
+.sidenav__close:focus {
+    color: var(--sidenav-accent);
+}
+
+.sidenav__links {
+    min-width: var(--sidenav-width);
+    padding: 18px 10px;
+}
+
+.sidenav__link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-bottom: 6px;
+    padding: 13px 15px;
+
+    color: var(--sidenav-text);
+    font-size: 17px;
+    text-decoration: none;
+    white-space: nowrap;
+
+    border-left: 3px solid transparent;
+    border-radius: 5px;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.sidenav__link:hover,
+.sidenav__link:focus {
+    color: #ffffff;
+    background-color: rgba(227, 38, 54, 0.14);
+    border-left-color: var(--sidenav-accent);
+}
+
+.sidenav__icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+
+    filter: drop-shadow(0 0 4px rgba(227, 38, 54, 0.55));
+}
+
+/* Identity login/logout section */
+.sidenav__account {
+    min-width: var(--sidenav-width);
+    padding: 16px 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Override Bootstrap's horizontal navbar styling */
+.sidenav__account .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.sidenav__account .nav-link {
+    color: var(--sidenav-text) !important;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.sidenav__account .nav-link:hover,
+.sidenav__account .nav-link:focus {
+    color: var(--sidenav-accent) !important;
+}
+
+/* Main page content */
+.page-content {
+    min-height: 100vh;
+    padding-top: 16px;
+
+    transition: margin-left 0.35s ease;
+}
+
+/* Pushes the content when the navigation opens */
+.page-content.page-content--shifted {
+    margin-left: var(--sidenav-width);
+}
+
+/* Open menu button */
+.sidenav-open-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0 0 12px 18px;
+    padding: 9px 15px;
+
+    color: #ffffff;
+    background-color: #161d26;
+
+    border: 1px solid #303945;
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+.sidenav-open-button:hover,
+.sidenav-open-button:focus {
+    background-color: #202a36;
+    border-color: var(--sidenav-accent);
+}
+
+.sidenav-open-button__icon {
+    color: var(--sidenav-accent);
+    font-size: 23px;
+    line-height: 1;
+}
+
+/* Avoid squeezing the page too much on small screens */
+@media (max-width: 600px) {
+    :root {
+        --sidenav-width: 85vw;
+    }
+
+    .page-content.page-content--shifted {
+        margin-left: 0;
+    }
+}

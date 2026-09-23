@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Communication</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 15h34v24H27l-9 8v-8h-6z" fill="#D9DDE1" stroke="#30343A" stroke-width="3"/>
+    <path d="M28 29h22v15H39l-6 6v-6h-5z" fill="#30343A" stroke="#D9DDE1" stroke-width="2.5"/>
+    <circle cx="35" cy="36.5" r="2" fill="#E1192D"/><circle cx="41" cy="36.5" r="2" fill="#E1192D"/><circle cx="47" cy="36.5" r="2" fill="#E1192D"/>
+  </g>
+</svg>

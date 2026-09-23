@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Home</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m10 30 22-18 22 18" stroke="#30343A" stroke-width="5"/>
+    <path d="M16 27v24h32V27L32 14z" fill="#D9DDE1" stroke="#30343A" stroke-width="3"/>
+    <path d="M27 51V36h10v15" fill="#30343A" stroke="#30343A" stroke-width="2"/>
+    <path d="M41 21 50 29" stroke="#E1192D" stroke-width="4"/>
+  </g>
+</svg>

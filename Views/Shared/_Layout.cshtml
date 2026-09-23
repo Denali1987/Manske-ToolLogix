@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ToolLogix</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ToolLogix.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Left side navigation -->
+    <nav id="toolLogixSidenav"
+         class="sidenav"
+         aria-label="Main navigation"
+         aria-hidden="true">
+
+        <div class="sidenav__header">
+            <a class="sidenav__logo"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Index">
+
+                <img src="~/images/ToolLogixLogo.png"
+                     asp-append-version="true"
+                     alt="ToolLogix"
+                     class="sidenav__logo-image" />
+            </a>
+
+            <button type="button"
+                    class="sidenav__close"
+                    aria-label="Close navigation"
+                    onclick="closeNav()">
+                &times;
+            </button>
+        </div>
+
+        <div class="sidenav__links">
+            <a class="sidenav__link"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Index">
+
+                <img src="~/images/home.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+
+                <span>Home</span>
+            </a>
+
+            <a class="sidenav__link"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Assets">
+
+                <img src="~/images/assets.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+
+                <span>Assets</span>
+            </a>
+
+            <a class="sidenav__link"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="WorkLogs">
+
+                <img src="~/images/work-logs.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+
+                <span>Work Logs</span>
+            </a>
+
+            <a class="sidenav__link"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Inventory">
+
+                <img src="~/images/spare-inventory.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+
+                <span>Inventory</span>
+            </a>
+        </div>
+
+        <div class="sidenav__account">
+            <partial name="_LoginPartial" />
+        </div>
+    </nav>
+
+    <!-- Everything in this section is pushed to the right -->
+    <div id="pageContent" class="page-content">
+        <button id="openNavButton"
+                type="button"
+                class="sidenav-open-button"
+                aria-label="Open navigation"
+                aria-controls="toolLogixSidenav"
+                aria-expanded="false"
+                onclick="openNav()">
+            <span class="sidenav-open-button__icon">&#9776;</span>
+            <span>Menu</span>
+        </button>
+
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

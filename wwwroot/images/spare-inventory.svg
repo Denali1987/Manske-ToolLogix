@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Spare Inventory</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 16h40v13H12zM12 35h40v13H12z" fill="#D9DDE1" stroke="#30343A" stroke-width="3"/>
+    <path d="M22 22h20M22 41h20" stroke="#30343A" stroke-width="3"/>
+    <path d="M46 13h7v9h-7z" fill="#E1192D" stroke="#8C0E1B" stroke-width="1.5"/>
+  </g>
+</svg>
