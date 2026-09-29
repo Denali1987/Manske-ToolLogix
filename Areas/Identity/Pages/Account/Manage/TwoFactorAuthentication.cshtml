@@ -1,0 +1,67 @@
+﻿@page
+@using Microsoft.AspNetCore.Http.Features
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Two-Factor Authentication";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+    var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
+}
+        <section class="manage-card" aria-labelledby="two-factor-heading">
+            <header class="manage-card__header">
+                <h2 id="two-factor-heading">Two-factor authentication</h2>
+                <p>Add another layer of protection to your ToolLogix account.</p>
+            </header>
+            <partial name="_StatusMessage" for="StatusMessage" />
+            @if (consentFeature?.CanTrack ?? true)
+            {
+                <div class="manage-security">
+                    @if (Model.Is2faEnabled)
+                    {
+                        <p class="manage-status manage-status--success"><span aria-hidden="true">✓</span> Two-factor authentication is enabled</p>
+                        @if (Model.RecoveryCodesLeft == 0)
+                        {
+                            <div class="manage-notice manage-notice--danger" role="alert"><strong>You have no recovery codes left.</strong><p>Generate a new set before attempting to log in with a recovery code.</p></div>
+                        }
+                        else if (Model.RecoveryCodesLeft == 1)
+                        {
+                            <div class="manage-notice manage-notice--danger" role="alert"><strong>You have one recovery code left.</strong><p>Generate a new set so you do not lose access to your account.</p></div>
+                        }
+                        else if (Model.RecoveryCodesLeft <= 3)
+                        {
+                            <div class="manage-notice manage-notice--warning" role="alert"><strong>You have @Model.RecoveryCodesLeft recovery codes left.</strong><p>Consider generating a new set of recovery codes.</p></div>
+                        }
+                        <div class="manage-actions">
+                            @if (Model.IsMachineRemembered)
+                            {
+                                <form method="post"><button type="submit" class="manage-button manage-button--secondary">Forget this browser</button></form>
+                            }
+                            <a asp-page="./Disable2fa" class="manage-button manage-button--danger">Disable 2FA</a>
+                            <a asp-page="./GenerateRecoveryCodes" class="manage-button manage-button--secondary">Reset recovery codes</a>
+                        </div>
+                    }
+                    <div class="manage-security__section">
+                        <h3>Authenticator app</h3>
+                        <p>Use an authenticator app to generate secure verification codes when you sign in.</p>
+                        <div class="manage-actions">
+                            @if (!Model.HasAuthenticator)
+                            {
+                                <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="manage-form__submit">Add authenticator app</a>
+                            }
+                            else
+                            {
+                                <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="manage-form__submit">Set up authenticator app</a>
+                                <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="manage-button manage-button--secondary">Reset authenticator app</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="manage-notice manage-notice--danger" role="alert"><strong>Privacy and cookie policy not accepted.</strong><p>You must accept the policy before enabling two-factor authentication.</p></div>
+            }
+        </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+
+# User-specific settings
+*.rsuser
+*.userosscache
+*.sln.docstates
+
+# Identity scaffolding instructions
+ScaffoldingReadMe.txt

@@ -1,0 +1,29 @@
+﻿@page
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+
+        <section class="manage-card" aria-labelledby="personal-data-heading">
+            <header class="manage-card__header">
+                <h2 id="personal-data-heading">Personal data</h2>
+                <p>Download a copy of your account data or permanently remove your account.</p>
+            </header>
+            <div class="manage-data-options">
+                <section class="manage-option">
+                    <div><h3>Download your data</h3><p>Download the personal information associated with your ToolLogix account.</p></div>
+                    <form id="download-data" asp-page="DownloadPersonalData" method="post"><button class="manage-button manage-button--secondary" type="submit">Download data</button></form>
+                </section>
+                <section class="manage-option manage-option--danger">
+                    <div><h3>Delete your account</h3><p>This permanently removes your account and cannot be undone.</p></div>
+                    <a id="delete" asp-page="DeletePersonalData" class="manage-button manage-button--danger">Delete account</a>
+                </section>
+            </div>
+        </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

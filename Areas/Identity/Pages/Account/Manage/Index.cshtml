@@ -1,0 +1,64 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="manage-page">
+    <header class="manage-page__header">
+        <p class="manage-page__eyebrow">ToolLogix account</p>
+        <h1>Account settings</h1>
+        <p>Manage your profile and security preferences.</p>
+    </header>
+
+    <div class="manage-page__grid">
+        <aside class="manage-page__navigation" aria-label="Account settings navigation">
+            <partial name="_ManageNav" />
+        </aside>
+
+        <section class="manage-card" aria-labelledby="profile-heading">
+            <div class="manage-card__header">
+                <h2 id="profile-heading">Profile</h2>
+                <p>Review your account name and update your contact information.</p>
+            </div>
+
+            <partial name="_StatusMessage" for="StatusMessage" />
+
+            <form id="profile-form" method="post" class="manage-form">
+                <div asp-validation-summary="ModelOnly"
+                     class="manage-form__validation text-danger"
+                     role="alert"></div>
+
+                <div class="form-floating manage-form__field">
+                    <input asp-for="Username"
+                           class="form-control"
+                           placeholder="Username"
+                           disabled />
+                    <label asp-for="Username">Username</label>
+                    <div class="manage-form__hint">Your username is managed by ToolLogix.</div>
+                </div>
+
+                <div class="form-floating manage-form__field">
+                    <input asp-for="Input.PhoneNumber"
+                           class="form-control"
+                           autocomplete="tel"
+                           placeholder="Phone number" />
+                    <label asp-for="Input.PhoneNumber">Phone number</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <button id="update-profile-button"
+                        type="submit"
+                        class="manage-form__submit">
+                    Save changes
+                </button>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

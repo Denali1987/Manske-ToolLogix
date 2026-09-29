@@ -6,59 +6,61 @@
     <title>@ViewData["Title"] - ToolLogix</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ToolLogix.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/manage-theme.css" asp-append-version="true" />
+
 </head>
 <body>
-    <!-- Left side navigation -->
+    <!-- Permanent upper-left branding and navigation button -->
+    <header class="app-header">
+        <a class="app-header__logo"
+           asp-area=""
+           asp-controller="Home"
+           asp-action="Index">
+            <img src="~/images/ToolLogixLogo.png"
+                 asp-append-version="true"
+                 alt="ToolLogix"
+                 class="app-header__logo-image" />
+        </a>
+
+        <button id="navToggleButton"
+                type="button"
+                class="nav-toggle nav-toggle--open"
+                aria-label="Close navigation"
+                aria-controls="toolLogixSidenav"
+                aria-expanded="true"
+                onclick="toggleNav()">
+            <span class="nav-toggle__line"></span>
+            <span class="nav-toggle__line"></span>
+            <span class="nav-toggle__line"></span>
+        </button>
+    </header>
+
     <nav id="toolLogixSidenav"
-         class="sidenav"
+         class="sidenav sidenav--open"
          aria-label="Main navigation"
-         aria-hidden="true">
-
-        <div class="sidenav__header">
-            <a class="sidenav__logo"
-               asp-area=""
-               asp-controller="Home"
-               asp-action="Index">
-
-                <img src="~/images/ToolLogixLogo.png"
-                     asp-append-version="true"
-                     alt="ToolLogix"
-                     class="sidenav__logo-image" />
-            </a>
-
-            <button type="button"
-                    class="sidenav__close"
-                    aria-label="Close navigation"
-                    onclick="closeNav()">
-                &times;
-            </button>
-        </div>
+         aria-hidden="false">
 
         <div class="sidenav__links">
+
             <a class="sidenav__link"
                asp-area=""
                asp-controller="Home"
                asp-action="Index">
-
                 <img src="~/images/home.svg"
                      asp-append-version="true"
                      alt=""
                      class="sidenav__icon" />
-
                 <span>Home</span>
             </a>
 
             <a class="sidenav__link"
                asp-area=""
                asp-controller="Home"
-               asp-action="Assets">
-
+               asp-action="AssetSearch">
                 <img src="~/images/assets.svg"
                      asp-append-version="true"
                      alt=""
                      class="sidenav__icon" />
-
                 <span>Assets</span>
             </a>
 
@@ -66,12 +68,10 @@
                asp-area=""
                asp-controller="Home"
                asp-action="WorkLogs">
-
                 <img src="~/images/work-logs.svg"
                      asp-append-version="true"
                      alt=""
                      class="sidenav__icon" />
-
                 <span>Work Logs</span>
             </a>
 
@@ -79,34 +79,67 @@
                asp-area=""
                asp-controller="Home"
                asp-action="Inventory">
-
                 <img src="~/images/spare-inventory.svg"
                      asp-append-version="true"
                      alt=""
                      class="sidenav__icon" />
-
-                <span>Inventory</span>
+                <span>Spare Inventory</span>
             </a>
+
+            <a class="sidenav__link"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Communication">
+                <img src="~/images/communication.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+                <span>Communication</span>
+            </a>
+
+            <div class="sidenav__divider"></div>
+
+            <a class="sidenav__link"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Admin">
+                <img src="~/images/admin.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+                <span>Admin</span>
+            </a>
+
+            <a class="sidenav__link"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Users">
+                <img src="~/images/users.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+                <span>Users</span>
+            </a>
+
+            <a class="sidenav__link"
+               asp-area="Identity"
+               asp-page="/Account/Manage/Index">
+                <img src="~/images/gear-settings.svg"
+                     asp-append-version="true"
+                     alt=""
+                     class="sidenav__icon" />
+                <span>Settings</span>
+            </a>
+
         </div>
 
         <div class="sidenav__account">
             <partial name="_LoginPartial" />
         </div>
+
     </nav>
 
-    <!-- Everything in this section is pushed to the right -->
-    <div id="pageContent" class="page-content">
-        <button id="openNavButton"
-                type="button"
-                class="sidenav-open-button"
-                aria-label="Open navigation"
-                aria-controls="toolLogixSidenav"
-                aria-expanded="false"
-                onclick="openNav()">
-            <span class="sidenav-open-button__icon">&#9776;</span>
-            <span>Menu</span>
-        </button>
-
+    <div id="pageContent" class="page-content page-content--shifted">
         <div class="container">
             <main role="main" class="pb-3">
                 @RenderBody()
