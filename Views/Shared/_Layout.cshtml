@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var settingsIsActive = Context.Request.Path.StartsWithSegments(
+        "/Identity/Account/Manage",
+        StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -86,17 +91,6 @@
                 <span>Spare Inventory</span>
             </a>
 
-            <a class="sidenav__link"
-               asp-area=""
-               asp-controller="Home"
-               asp-action="Communication">
-                <img src="~/images/communication.svg"
-                     asp-append-version="true"
-                     alt=""
-                     class="sidenav__icon" />
-                <span>Communication</span>
-            </a>
-
             <div class="sidenav__divider"></div>
 
             <a class="sidenav__link"
@@ -121,7 +115,7 @@
                 <span>Users</span>
             </a>
 
-            <a class="sidenav__link"
+            <a class="sidenav__link @(settingsIsActive ? "sidenav__link--settings-active" : null)"
                asp-area="Identity"
                asp-page="/Account/Manage/Index">
                 <img src="~/images/gear-settings.svg"

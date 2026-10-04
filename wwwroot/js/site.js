@@ -1,4 +1,25 @@
 ﻿const navStateKey = "toolLogixNavOpen";
+const themeStorageKey = "toolLogixTheme";
+
+function getPreferredTheme() {
+    const savedTheme = localStorage.getItem(themeStorageKey);
+
+    if (savedTheme === "dark" || savedTheme === "light") {
+        return savedTheme;
+    }
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+}
+
+function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+}
+
+// Apply the saved or system theme as soon as site.js loads.
+applyTheme(getPreferredTheme());
 
 function getNavElements() {
     return {
@@ -37,6 +58,7 @@ function toggleNav() {
     }
 
     const isOpen = !sidenav.classList.contains("sidenav--open");
+
     setNavState(isOpen);
 }
 
@@ -47,7 +69,7 @@ function normalizePath(path) {
         normalizedPath = normalizedPath.replace(/\/+$/, "");
     }
 
-    // Treat all of these as the ToolLogix homepage.
+    // Treat these routes as the ToolLogix homepage.
     if (
         normalizedPath === "/home" ||
         normalizedPath === "/home/index"
@@ -78,16 +100,48 @@ function highlightCurrentPage() {
     });
 }
 
+function initializeThemeToggle() {
+    const toggle = document.getElementById("darkModeToggle");
+    const icon = document.getElementById("themeIcon");
+    const currentTheme = getPreferredTheme();
+
+    applyTheme(currentTheme);
+
+    // The toggle only exists on the Profile page.
+    if (!toggle) {
+        return;
+    }
+
+    toggle.checked = currentTheme === "dark";
+
+    if (icon) {
+        icon.textContent = toggle.checked ? "🌙" : "☀️";
+    }
+
+    toggle.addEventListener("change", function () {
+        const theme = toggle.checked ? "dark" : "light";
+
+        applyTheme(theme);
+        localStorage.setItem(themeStorageKey, theme);
+
+        if (icon) {
+            icon.textContent = theme === "dark" ? "🌙" : "☀️";
+        }
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const storedState = sessionStorage.getItem(navStateKey);
 
-    // Open by default when no preference has been saved.
-    const isOpen = storedState === null
-        ? true
-        : storedState === "true";
+    // Open the navigation by default if no state has been saved.
+    const isOpen =
+        storedState === null
+            ? true
+            : storedState === "true";
 
     setNavState(isOpen);
     highlightCurrentPage();
+    initializeThemeToggle();
 });
 
 document.addEventListener("keydown", function (event) {

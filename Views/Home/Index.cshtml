@@ -1,8 +1,124 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IReadOnlyList<ToolLogix.Models.ShopAnnouncement>
+@using ToolLogix.Models
+
+@{
+    ViewData["Title"] = "Shop Announcements";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="announcement-page">
+    <header class="announcement-page__header">
+        <div>
+            <p class="announcement-page__eyebrow">ToolLogix Communication</p>
+            <h1>Shop announcements</h1>
+            <p>Priority notices, safety information, and general shop updates.</p>
+        </div>
+
+        <details class="announcement-composer">
+            <summary class="announcement-button announcement-button--primary">
+                <span aria-hidden="true">+</span>
+                New announcement
+            </summary>
+
+            <form asp-controller="Home" asp-action="CreateAnnouncement" method="post" class="announcement-form">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="announcement-form__field">
+                    <label for="announcement-title">Title</label>
+                    <input id="announcement-title" name="Title" class="form-control" maxlength="100" required />
+                </div>
+
+                <div class="announcement-form__field">
+                    <label for="announcement-message">Message</label>
+                    <textarea id="announcement-message" name="Message" class="form-control" rows="4" maxlength="2000" required></textarea>
+                </div>
+
+                <fieldset class="announcement-form__types">
+                    <legend>Announcement type</legend>
+
+                    <label class="announcement-type-choice">
+                        <input type="radio" name="Type" value="Priority" />
+                        <span aria-hidden="true">🔥</span> Priority
+                    </label>
+
+                    <label class="announcement-type-choice">
+                        <input type="radio" name="Type" value="Safety" />
+                        <span aria-hidden="true">🦺</span> Safety
+                    </label>
+
+                    <label class="announcement-type-choice">
+                        <input type="radio" name="Type" value="General" checked />
+                        <span aria-hidden="true">📢</span> General
+                    </label>
+                </fieldset>
+
+                <label class="announcement-form__pin">
+                    <input type="checkbox" name="IsPinned" value="true" />
+                    Pin this announcement to the top
+                </label>
+
+                <button type="submit" class="announcement-button announcement-button--primary">
+                    Post announcement
+                </button>
+            </form>
+        </details>
+    </header>
+
+    @if (TempData["AnnouncementStatus"] is string statusMessage)
+    {
+        <div class="announcement-status" role="status">@statusMessage</div>
+    }
+
+    <section class="announcement-feed" aria-label="Shop announcements">
+        @if (Model.Count == 0)
+        {
+            <div class="announcement-empty">
+                <span class="announcement-empty__icon" aria-hidden="true">📢</span>
+                <h2>No announcements yet</h2>
+                <p>Create the first update for the ToolLogix shop board.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var announcement in Model)
+            {
+                var typeClass = announcement.Type.ToString().ToLowerInvariant();
+                var icon = announcement.Type switch
+                {
+                    AnnouncementType.Priority => "🔥",
+                    AnnouncementType.Safety => "🦺",
+                    _ => "📢"
+                };
+
+                <article class="announcement-card announcement-card--@typeClass">
+                    <div class="announcement-card__icon" aria-hidden="true">@icon</div>
+
+                    <div class="announcement-card__content">
+                        <div class="announcement-card__labels">
+                            <span class="announcement-badge announcement-badge--@typeClass">@announcement.Type</span>
+
+                            @if (announcement.IsPinned)
+                            {
+                                <span class="announcement-badge announcement-badge--pinned">Pinned</span>
+                            }
+                        </div>
+
+                        <h2>@announcement.Title</h2>
+                        <p class="announcement-card__message">@announcement.Message</p>
+
+                        <footer class="announcement-card__meta">
+                            <span>Posted by @announcement.AuthorName</span>
+                            <span aria-hidden="true">•</span>
+                            <time datetime="@announcement.CreatedAtUtc.ToString("O")">
+                                @announcement.CreatedAtUtc.ToLocalTime().ToString("MMM d, yyyy 'at' h:mm tt")
+                            </time>
+                        </footer>
+                    </div>
+                </article>
+            }
+        }
+    </section>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

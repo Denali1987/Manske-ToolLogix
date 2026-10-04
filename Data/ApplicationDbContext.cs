@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ToolLogix.Models;
 
 namespace ToolLogix.Data
 {
@@ -9,5 +10,8 @@ namespace ToolLogix.Data
             : base(options)
         {
         }
+
+        public DbSet<ShopAnnouncement> ShopAnnouncements => Set<ShopAnnouncement>();
     }
 }
+
