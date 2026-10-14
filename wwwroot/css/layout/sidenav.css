@@ -1,0 +1,277 @@
+﻿.navbar-logo {
+    height: 60px;
+    width: auto;
+    display: block;
+}
+
+.navbar-icon {
+    width: 38px;
+    height: 38px;
+    opacity: 0.78;
+    filter: drop-shadow(0 0 2px rgba(225, 25, 45, 0.35));
+    transition: 0.2s ease;
+}
+
+.nav-link:hover .nav-icon,
+.nav-link.active .nav-icon {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: brightness(1.15) drop-shadow(0 0 6px rgba(225, 25, 45, 0.9));
+}
+
+/* ToolLogix application shell and side navigation */
+
+/* Permanent upper-left header */
+.app-header {
+    position: fixed;
+    z-index: 1040;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: var(--header-height);
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px 12px 18px;
+    background-color: #10151c;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+}
+
+.app-header__logo {
+    display: block;
+}
+
+.app-header__logo-image {
+    display: block;
+    width: 190px;
+    max-height: 70px;
+    object-fit: contain;
+}
+
+/* Hamburger button */
+.nav-toggle {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.nav-toggle__line {
+    position: absolute;
+    left: 8px;
+    width: 28px;
+    height: 3px;
+    background-color: #ffffff;
+    border-radius: 3px;
+    transition: top 0.25s ease, transform 0.25s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+
+    .nav-toggle__line:nth-child(1) {
+        top: 12px;
+    }
+
+    .nav-toggle__line:nth-child(2) {
+        top: 20px;
+    }
+
+    .nav-toggle__line:nth-child(3) {
+        top: 28px;
+    }
+
+.nav-toggle:hover .nav-toggle__line {
+    background-color: var(--sidenav-accent);
+}
+
+/* Transform hamburger into an X */
+.nav-toggle.nav-toggle--open .nav-toggle__line:nth-child(1) {
+    top: 20px;
+    transform: rotate(45deg);
+}
+
+.nav-toggle.nav-toggle--open .nav-toggle__line:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle.nav-toggle--open .nav-toggle__line:nth-child(3) {
+    top: 20px;
+    transform: rotate(-45deg);
+}
+
+/* Side navigation starts underneath the header */
+.sidenav {
+    position: fixed;
+    z-index: 1030;
+    top: var(--header-height);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 0;
+    height: calc(100vh - var(--header-height));
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--sidenav-background);
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.35);
+    transition: width 0.35s ease;
+}
+
+    .sidenav.sidenav--open {
+        width: var(--sidenav-width);
+    }
+
+/* Keep page content below the fixed header */
+.page-content {
+    min-height: 100vh;
+    padding-top: calc(var(--header-height) + 30px);
+    transition: margin-left 0.35s ease;
+}
+
+    .page-content.page-content--shifted {
+        margin-left: var(--sidenav-width);
+    }
+
+/* Applied by JavaScript when open */
+
+.sidenav__logo {
+    display: block;
+}
+
+.sidenav__logo-image {
+    display: block;
+    width: 190px;
+    height: auto;
+}
+
+.sidenav__close {
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+    padding: 0 8px;
+    font-size: 36px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+    .sidenav__close:hover,
+    .sidenav__close:focus {
+        color: var(--sidenav-accent);
+    }
+
+.sidenav__links {
+    flex: 1;
+    padding: 18px 10px;
+}
+
+.sidenav__link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+    padding: 13px 15px;
+    color: var(--sidenav-text);
+    font-size: 17px;
+    text-decoration: none;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
+    border-radius: 5px;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sidenav__divider {
+    height: 1px;
+    margin: 14px 12px;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.sidenav__link:hover,
+.sidenav__link:focus {
+    color: #ffffff;
+    background-color: rgba(227, 38, 54, 0.14);
+    border-left-color: var(--sidenav-accent);
+}
+
+.sidenav__icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    opacity: 0.82;
+    filter: drop-shadow(0 0 7px rgba(227, 38, 54, 1));
+    transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+
+.sidenav__link.active .sidenav__icon {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: brightness(1.18) drop-shadow(0 0 7px rgba(227, 38, 54, 0.9));
+}
+
+.sidenav__link.active {
+    color: #ffffff;
+    background-color: rgba(227, 38, 54, 0.2);
+    border-left-color: var(--sidenav-accent);
+    box-shadow: inset 0 0 14px rgba(227, 38, 54, 0.08), 0 0 8px rgba(227, 38, 54, 0.08);
+}
+
+/* Identity login/logout section */
+.sidenav__account {
+    padding: 16px 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+    /* Override Bootstrap's horizontal navbar styling */
+    .sidenav__account .navbar-nav {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .sidenav__account .nav-link {
+        color: var(--sidenav-text) !important;
+        white-space: nowrap;
+        text-align: left;
+    }
+
+        .sidenav__account .nav-link:hover,
+        .sidenav__account .nav-link:focus {
+            color: var(--sidenav-accent) !important;
+        }
+
+/* Open menu button */
+.sidenav-open-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 12px 18px;
+    padding: 9px 15px;
+    color: #ffffff;
+    background-color: #161d26;
+    border: 1px solid #303945;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .sidenav-open-button:hover,
+    .sidenav-open-button:focus {
+        background-color: #202a36;
+        border-color: var(--sidenav-accent);
+    }
+
+.sidenav-open-button__icon {
+    color: var(--sidenav-accent);
+    font-size: 23px;
+    line-height: 1;
+}
+
+/* Avoid squeezing the page too much on small screens */
+@media (max-width: 600px) {
+    :root {
+        --sidenav-width: 85vw;
+    }
+
+    .page-content.page-content--shifted {
+        margin-left: 0;
+    }
+}

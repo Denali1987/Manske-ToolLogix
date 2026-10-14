@@ -28,7 +28,8 @@ namespace ToolLogix.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAnnouncement(
-            [Bind("Title,Message,Type,IsPinned")] ShopAnnouncement announcement)
+            [Bind("Title,Message,Type,IsPinned")]
+            ShopAnnouncement announcement)
         {
             if (!ModelState.IsValid)
             {
@@ -36,19 +37,47 @@ namespace ToolLogix.Controllers
                 return View("Index", announcements);
             }
 
-            announcement.AuthorName = User.Identity?.Name ?? "ToolLogix User";
+            announcement.AuthorName =
+                User.Identity?.Name ?? "ToolLogix User";
+
             announcement.CreatedAtUtc = DateTime.UtcNow;
 
             _context.ShopAnnouncements.Add(announcement);
             await _context.SaveChangesAsync();
 
-            TempData["AnnouncementStatus"] = "Announcement posted.";
+            TempData["AnnouncementStatus"] =
+                "Announcement posted.";
+
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Assets()
+        public async Task<IActionResult> Assets(string? assetNumber)
         {
-            return View();
+            var viewModel = new AssetSearchViewModel
+            {
+                SearchTerm = assetNumber?.Trim() ?? string.Empty,
+                HasSearched = !string.IsNullOrWhiteSpace(assetNumber)
+            };
+
+            if (viewModel.HasSearched)
+            {
+                string search = viewModel.SearchTerm;
+
+                viewModel.Results = await _context.Assets
+                    .AsNoTracking()
+                    .Where(asset =>
+                        asset.AssetNumber.Contains(search) ||
+                        asset.Description.Contains(search) ||
+                        (asset.PartNumber != null &&
+                         asset.PartNumber.Contains(search)) ||
+                        (asset.PressNumber != null &&
+                         asset.PressNumber.Contains(search)))
+                    .OrderBy(asset => asset.AssetNumber)
+                    .Take(50)
+                    .ToListAsync();
+            }
+
+            return View(viewModel);
         }
 
         public IActionResult WorkLogs()
@@ -56,19 +85,34 @@ namespace ToolLogix.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [ResponseCache(
+            Duration = 0,
+            Location = ResponseCacheLocation.None,
+            NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId =
+                    Activity.Current?.Id ??
+                    HttpContext.TraceIdentifier
+            });
         }
 
-        private Task<List<ShopAnnouncement>> GetAnnouncementsAsync()
+        private Task<List<ShopAnnouncement>>
+            GetAnnouncementsAsync()
         {
             return _context.ShopAnnouncements
                 .AsNoTracking()
-                .OrderByDescending(announcement => announcement.IsPinned)
-                .ThenByDescending(announcement => announcement.Type == AnnouncementType.Priority)
-                .ThenByDescending(announcement => announcement.CreatedAtUtc)
+                .OrderByDescending(
+                    announcement => announcement.IsPinned)
+                .ThenByDescending(
+                    announcement =>
+                        announcement.Type ==
+                        AnnouncementType.Priority)
+                .ThenByDescending(
+                    announcement =>
+                        announcement.CreatedAtUtc)
                 .ToListAsync();
         }
     }

@@ -11,7 +11,10 @@
     <title>@ViewData["Title"] - ToolLogix</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/manage-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout/sidenav.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ToolLogix.styles.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
 
 </head>
 <body>
@@ -61,7 +64,7 @@
             <a class="sidenav__link"
                asp-area=""
                asp-controller="Home"
-               asp-action="AssetSearch">
+               asp-action="Assets">
                 <img src="~/images/assets.svg"
                      asp-append-version="true"
                      alt=""

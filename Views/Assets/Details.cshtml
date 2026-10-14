@@ -1,0 +1,163 @@
+﻿@model ToolLogix.Models.AssetDetailsViewModel
+
+@{
+    ViewData["Title"] = $"{Model.Asset.AssetNumber} Details";
+}
+
+<div class="asset-details-page">
+    <header class="asset-details-header">
+        <div>
+            <a class="asset-details-back"
+               asp-controller="Home"
+               asp-action="Assets">
+                ← Back to asset search
+            </a>
+
+            <p class="asset-details-eyebrow">
+                ToolLogix asset
+            </p>
+
+            <h1>@Model.Asset.AssetNumber</h1>
+
+            <p class="asset-details-description">
+                @Model.Asset.Description
+            </p>
+        </div>
+
+        <span class="asset-details-status">
+            @Model.Asset.Status
+        </span>
+    </header>
+
+    <section class="asset-overview"
+             aria-labelledby="asset-overview-heading">
+
+        <h2 id="asset-overview-heading">Asset overview</h2>
+
+        <div class="asset-overview-grid">
+            <article class="asset-overview-card">
+                <span>Part number</span>
+                <strong>
+                    @(Model.Asset.PartNumber ?? "Not assigned")
+                </strong>
+            </article>
+
+            <article class="asset-overview-card">
+                <span>Press</span>
+                <strong>
+                    @(Model.Asset.PressNumber ?? "Not assigned")
+                </strong>
+            </article>
+
+            <article class="asset-overview-card">
+                <span>Location</span>
+                <strong>
+                    @(Model.Asset.Location ?? "Not assigned")
+                </strong>
+            </article>
+
+            <article class="asset-overview-card">
+                <span>Status</span>
+                <strong>@Model.Asset.Status</strong>
+            </article>
+        </div>
+    </section>
+
+    <section class="asset-activity-grid">
+        <article class="asset-section-card">
+            <div class="asset-section-card__header">
+                <div>
+                    <p class="asset-section-card__eyebrow">
+                        Maintenance
+                    </p>
+
+                    <h2>Recent work</h2>
+                </div>
+
+                <button type="button" disabled>
+                    Add work log
+                </button>
+            </div>
+
+            <p class="asset-section-card__empty">
+                Work-log information will appear here.
+            </p>
+        </article>
+
+        <article class="asset-section-card">
+            <div class="asset-section-card__header">
+                <div>
+                    <p class="asset-section-card__eyebrow">
+                        Labor
+                    </p>
+
+                    <h2>Recent labor charges</h2>
+                </div>
+            </div>
+
+            <p class="asset-section-card__empty">
+                Labor-charge information will appear here.
+            </p>
+        </article>
+
+        <article class="asset-section-card">
+            <div class="asset-section-card__header">
+                <div>
+                    <p class="asset-section-card__eyebrow">
+                        Inventory
+                    </p>
+
+                    <h2>Recently used spares</h2>
+                </div>
+            </div>
+
+            <p class="asset-section-card__empty">
+                Spare usage will appear here.
+            </p>
+        </article>
+    </section>
+
+    <section class="asset-print"
+             aria-labelledby="asset-print-heading">
+
+        <div class="asset-print__header">
+            <div>
+                <p class="asset-print__eyebrow">
+                    Technical documentation
+                </p>
+
+                <h2 id="asset-print-heading">Asset print</h2>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.PrintUrl))
+            {
+                <a href="@Model.PrintUrl"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Open full print ↗
+                </a>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PrintUrl))
+        {
+            <div class="asset-print__viewer">
+                <iframe src="@Model.PrintUrl"
+                        title="Print for asset @Model.Asset.AssetNumber">
+                </iframe>
+            </div>
+        }
+        else
+        {
+            <div class="asset-print__empty">
+                No print is currently assigned to this asset.
+            </div>
+        }
+    </section>
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/asset-details.css"
+          asp-append-version="true" />
+}

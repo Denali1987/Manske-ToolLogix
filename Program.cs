@@ -59,5 +59,16 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
+// Add test assets when running in Development.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+
+    var context = scope.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>();
+
+    await DbInitializer.SeedAssetsAsync(context);
+}
+
 app.Run();
 

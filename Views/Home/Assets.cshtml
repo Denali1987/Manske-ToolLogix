@@ -1,15 +1,174 @@
-﻿@{
+﻿@model ToolLogix.Models.AssetSearchViewModel
+
+@{
     ViewData["Title"] = "Assets";
 }
 
-<div class="assets">
-    <h1>Assets</h1>
+<div class="assets-page">
+    <header class="assets-page__header">
+        <p class="assets-page__eyebrow">
+            ToolLogix asset library
+        </p>
 
-    <input class="assets__input"
-           type="text"
-           placeholder="Enter an asset number" />
+        <h1>Find an asset</h1>
 
-    <button class="assets__button" type="submit">
-        Search
-    </button>
+        <p>
+            Search by asset or die number to open its tooling
+            information and work history.
+        </p>
+    </header>
+
+    <section class="asset-search-card"
+             aria-labelledby="asset-search-heading">
+
+        <div class="asset-search-card__icon"
+             aria-hidden="true">
+
+            <svg viewBox="0 0 24 24">
+                <path d="M10.75 4.5a6.25 6.25 0 1 0 0 12.5
+                         6.25 6.25 0 0 0 0-12.5Z" />
+                <path d="m15.25 15.25 4.25 4.25" />
+            </svg>
+        </div>
+
+        <div class="asset-search-card__content">
+            <h2 id="asset-search-heading">
+                Asset search
+            </h2>
+
+            <p>
+                Enter the complete asset number or part of it
+                to begin your search.
+            </p>
+
+            <form class="asset-search"
+                  asp-controller="Home"
+                  asp-action="Assets"
+                  method="get"
+                  role="search">
+
+                <label class="asset-search__label"
+                       for="assetNumber">
+                    Asset or die number
+                </label>
+
+                <div class="asset-search__controls">
+                    <div class="asset-search__input-wrap">
+
+                        <svg class="asset-search__input-icon"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M10.75 4.5a6.25 6.25 0 1 0 0 12.5
+                                     6.25 6.25 0 0 0 0-12.5Z" />
+                            <path d="m15.25 15.25 4.25 4.25" />
+                        </svg>
+
+                        <input id="assetNumber"
+                               name="assetNumber"
+                               value="@Model.SearchTerm"
+                               class="asset-search__input"
+                               type="search"
+                               placeholder="Example: D214042A"
+                               autocomplete="off" />
+                    </div>
+
+                    <button class="asset-search__button"
+                            type="submit">
+                        Search assets
+                    </button>
+                </div>
+
+                <p class="asset-search__hint">
+                    Search is not case-sensitive.
+                </p>
+            </form>
+        </div>
+    </section>
+
+    @if (Model.HasSearched)
+    {
+        <section class="asset-results"
+                 aria-labelledby="asset-results-heading">
+
+            <div class="asset-results__header">
+                <div>
+                    <p class="asset-results__eyebrow">
+                        Search results
+                    </p>
+
+                    <h2 id="asset-results-heading">
+                        Assets matching “@Model.SearchTerm”
+                    </h2>
+                </div>
+
+                <span class="asset-results__count">
+                    @Model.Results.Count
+                    result@(Model.Results.Count == 1 ? "" : "s")
+                </span>
+            </div>
+
+            @if (Model.Results.Count > 0)
+            {
+                <div class="asset-results__list">
+                    @foreach (var asset in Model.Results)
+                    {
+                        <article class="asset-result-card">
+                            <div class="asset-result-card__main">
+
+                                <span class="asset-result-card__number">
+                                    @asset.AssetNumber
+                                </span>
+
+                                <a class="asset-result-card__link"
+                                   asp-controller="Assets"
+                                   asp-action="Details"
+                                   asp-route-id="@asset.Id">
+                                    Open asset
+                                </a>
+
+                                <h3>@asset.Description</h3>
+
+                                <div class="asset-result-card__details">
+                                    <span>
+                                        <strong>Part:</strong>
+                                        @(asset.PartNumber ?? "Not assigned")
+                                    </span>
+
+                                    <span>
+                                        <strong>Press:</strong>
+                                        @(asset.PressNumber ?? "Not assigned")
+                                    </span>
+
+                                    <span>
+                                        <strong>Location:</strong>
+                                        @(asset.Location ?? "Not assigned")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <span class="asset-result-card__status">
+                                @asset.Status
+                            </span>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="asset-results__empty">
+                    <h3>No assets found</h3>
+
+                    <p>
+                        Check the asset number and try another search.
+                    </p>
+                </div>
+            }
+        </section>
+    }
 </div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/assets.css"
+          asp-append-version="true" />
+}

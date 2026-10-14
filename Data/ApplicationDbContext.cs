@@ -12,6 +12,8 @@ namespace ToolLogix.Data
         }
 
         public DbSet<ShopAnnouncement> ShopAnnouncements => Set<ShopAnnouncement>();
+
+        public DbSet<Asset> Assets => Set<Asset>();
     }
 }
 
