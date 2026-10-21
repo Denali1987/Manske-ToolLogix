@@ -1,0 +1,448 @@
+﻿@model ToolLogix.Models.CreateWorkLogViewModel
+
+@{
+    ViewData["Title"] = "Create Work Log";
+}
+
+<div class="create-work-log-page">
+    <header class="create-work-log-header">
+        <div>
+            <a class="create-work-log-back"
+               asp-controller="WorkLogs"
+               asp-action="Index">
+                ← Back to Work Logs
+            </a>
+
+            <p class="create-work-log-header__eyebrow">
+                Toolroom maintenance
+            </p>
+
+            <h1>Create Work Log</h1>
+
+            <p>
+                Record the issue, completed work, labor hours,
+                and tooling details used.
+            </p>
+        </div>
+    </header>
+
+    <form asp-controller="WorkLogs"
+          asp-action="Create"
+          method="post"
+          class="create-work-log-form">
+
+        <div asp-validation-summary="ModelOnly"
+             class="create-work-log-validation">
+        </div>
+
+        <section class="work-log-form-section">
+            <div class="work-log-form-section__header">
+                <div>
+                    <p class="work-log-form-section__eyebrow">
+                        General information
+                    </p>
+
+                    <h2>Work-log information</h2>
+                </div>
+            </div>
+
+            <div class="work-log-form-grid">
+                <div class="work-log-form-field">
+                    <label asp-for="WorkDate"></label>
+
+                    <input asp-for="WorkDate"
+                           type="date" />
+
+                    <span asp-validation-for="WorkDate"></span>
+                </div>
+
+                <div class="work-log-form-field">
+                    <label asp-for="AssetId"></label>
+
+                    <select asp-for="AssetId"
+                            asp-items="Model.AssetOptions">
+                        <option value="">Select an asset</option>
+                    </select>
+
+                    <span asp-validation-for="AssetId"></span>
+                </div>
+
+                <div class="work-log-form-field">
+                    <label asp-for="WorkOrderNumber"></label>
+
+                    <input asp-for="WorkOrderNumber"
+                           placeholder="Example: WO-1008" />
+
+                    <span asp-validation-for="WorkOrderNumber"></span>
+                </div>
+            </div>
+
+            <div class="work-log-form-field work-log-form-field--full">
+                <label asp-for="Issue"></label>
+
+                <textarea asp-for="Issue"
+                          rows="4"
+                          placeholder="Describe why work was required on this asset."></textarea>
+
+                <span asp-validation-for="Issue"></span>
+            </div>
+
+            <div class="work-log-form-field work-log-form-field--full">
+                <label asp-for="WorkDone"></label>
+
+                <textarea asp-for="WorkDone"
+                          rows="5"
+                          placeholder="Describe the inspections, adjustments, repairs, or replacements performed."></textarea>
+
+                <span asp-validation-for="WorkDone"></span>
+            </div>
+
+            <div class="work-log-form-field work-log-form-field--full">
+                <label asp-for="Notes"></label>
+
+                <textarea asp-for="Notes"
+                          rows="3"
+                          placeholder="Optional follow-up information or recommendations."></textarea>
+
+                <span asp-validation-for="Notes"></span>
+            </div>
+        </section>
+
+        <section class="work-log-form-section">
+            <div class="work-log-form-section__header">
+                <div>
+                    <p class="work-log-form-section__eyebrow">
+                        Labor
+                    </p>
+
+                    <h2>Labor entries</h2>
+
+                    <p>
+                        Record each employee who worked on the asset
+                        and the hours they charged.
+                    </p>
+                </div>
+
+                <button id="add-labor-entry"
+                        type="button"
+                        class="work-log-add-button">
+                    + Add employee
+                </button>
+            </div>
+
+            <div asp-validation-for="LaborEntries"
+                 class="work-log-section-validation">
+            </div>
+
+            <div id="labor-entry-list"
+                 class="work-log-entry-list">
+
+                @for (var i = 0; i < Model.LaborEntries.Count; i++)
+                {
+                    <div class="work-log-entry-row labor-entry-row">
+                        <input type="hidden"
+                               name="LaborEntries.Index"
+                               value="@i" />
+
+                        <div class="work-log-form-field">
+                            <label asp-for="LaborEntries[i].UserId">
+                                Employee
+                            </label>
+
+                            <select asp-for="LaborEntries[i].UserId"
+                                    asp-items="Model.EmployeeOptions">
+                                <option value="">Select an employee</option>
+                            </select>
+
+                            <span asp-validation-for="LaborEntries[i].UserId">
+                            </span>
+                        </div>
+
+                        <div class="work-log-form-field">
+                            <label asp-for="LaborEntries[i].Hours">
+                                Hours
+                            </label>
+
+                            <input asp-for="LaborEntries[i].Hours"
+                                   type="number"
+                                   min="0.01"
+                                   max="24"
+                                   step="0.25"
+                                   placeholder="0.00" />
+
+                            <span asp-validation-for="LaborEntries[i].Hours">
+                            </span>
+                        </div>
+
+                        <button type="button"
+                                class="work-log-remove-button"
+                                data-remove-row>
+                            Remove
+                        </button>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section class="work-log-form-section">
+            <div class="work-log-form-section__header">
+                <div>
+                    <p class="work-log-form-section__eyebrow">
+                        Tooling usage
+                    </p>
+
+                    <h2>Details used</h2>
+
+                    <p>
+                        Add each replacement detail consumed during
+                        this work. Leave this section blank if none
+                        were used.
+                    </p>
+                </div>
+
+                <button id="add-detail-entry"
+                        type="button"
+                        class="work-log-add-button">
+                    + Add detail
+                </button>
+            </div>
+
+            <div asp-validation-for="DetailsUsed"
+                 class="work-log-section-validation">
+            </div>
+
+            <div id="detail-entry-list"
+                 class="work-log-entry-list">
+
+                @for (var i = 0; i < Model.DetailsUsed.Count; i++)
+                {
+                    <div class="work-log-entry-row detail-entry-row">
+                        <input type="hidden"
+                               name="DetailsUsed.Index"
+                               value="@i" />
+
+                        <div class="work-log-form-field">
+                            <label asp-for="DetailsUsed[i].DetailNumber">
+                                Detail number
+                            </label>
+
+                            <input asp-for="DetailsUsed[i].DetailNumber"
+                                   placeholder="Example: 298" />
+
+                            <span asp-validation-for="DetailsUsed[i].DetailNumber">
+                            </span>
+                        </div>
+
+                        <div class="work-log-form-field">
+                            <label asp-for="DetailsUsed[i].Description">
+                                Description
+                            </label>
+
+                            <input asp-for="DetailsUsed[i].Description"
+                                   placeholder="Optional description" />
+
+                            <span asp-validation-for="DetailsUsed[i].Description">
+                            </span>
+                        </div>
+
+                        <div class="work-log-form-field">
+                            <label asp-for="DetailsUsed[i].Quantity">
+                                Quantity
+                            </label>
+
+                            <input asp-for="DetailsUsed[i].Quantity"
+                                   type="number"
+                                   min="1"
+                                   max="1000"
+                                   step="1" />
+
+                            <span asp-validation-for="DetailsUsed[i].Quantity">
+                            </span>
+                        </div>
+
+                        <button type="button"
+                                class="work-log-remove-button"
+                                data-remove-row>
+                            Remove
+                        </button>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <div class="create-work-log-actions">
+            <a asp-controller="WorkLogs"
+               asp-action="Index"
+               class="create-work-log-cancel">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="create-work-log-submit">
+                Save Work Log
+            </button>
+        </div>
+    </form>
+</div>
+
+<template id="labor-entry-template">
+    <div class="work-log-entry-row labor-entry-row">
+        <input type="hidden"
+               name="LaborEntries.Index"
+               value="__index__" />
+
+        <div class="work-log-form-field">
+            <label for="LaborEntries___index___UserId">
+                Employee
+            </label>
+
+            <select id="LaborEntries___index___UserId"
+                    name="LaborEntries[__index__].UserId">
+                <option value="">Select an employee</option>
+
+                @foreach (var employee in Model.EmployeeOptions)
+                {
+                    <option value="@employee.Value">
+                        @employee.Text
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="work-log-form-field">
+            <label for="LaborEntries___index___Hours">
+                Hours
+            </label>
+
+            <input id="LaborEntries___index___Hours"
+                   name="LaborEntries[__index__].Hours"
+                   type="number"
+                   min="0.01"
+                   max="24"
+                   step="0.25"
+                   placeholder="0.00" />
+        </div>
+
+        <button type="button"
+                class="work-log-remove-button"
+                data-remove-row>
+            Remove
+        </button>
+    </div>
+</template>
+
+<template id="detail-entry-template">
+    <div class="work-log-entry-row detail-entry-row">
+        <input type="hidden"
+               name="DetailsUsed.Index"
+               value="__index__" />
+
+        <div class="work-log-form-field">
+            <label for="DetailsUsed___index___DetailNumber">
+                Detail number
+            </label>
+
+            <input id="DetailsUsed___index___DetailNumber"
+                   name="DetailsUsed[__index__].DetailNumber"
+                   placeholder="Example: 298" />
+        </div>
+
+        <div class="work-log-form-field">
+            <label for="DetailsUsed___index___Description">
+                Description
+            </label>
+
+            <input id="DetailsUsed___index___Description"
+                   name="DetailsUsed[__index__].Description"
+                   placeholder="Optional description" />
+        </div>
+
+        <div class="work-log-form-field">
+            <label for="DetailsUsed___index___Quantity">
+                Quantity
+            </label>
+
+            <input id="DetailsUsed___index___Quantity"
+                   name="DetailsUsed[__index__].Quantity"
+                   type="number"
+                   min="1"
+                   max="1000"
+                   step="1"
+                   value="1" />
+        </div>
+
+        <button type="button"
+                class="work-log-remove-button"
+                data-remove-row>
+            Remove
+        </button>
+    </div>
+</template>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/work-log-create.css"
+          asp-append-version="true" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const laborList =
+                document.getElementById("labor-entry-list");
+
+            const detailList =
+                document.getElementById("detail-entry-list");
+
+            const laborTemplate =
+                document.getElementById("labor-entry-template");
+
+            const detailTemplate =
+                document.getElementById("detail-entry-template");
+
+            let laborIndex = @Model.LaborEntries.Count;
+            let detailIndex = @Model.DetailsUsed.Count;
+
+            document
+                .getElementById("add-labor-entry")
+                .addEventListener("click", function () {
+                    const markup = laborTemplate.innerHTML
+                        .replaceAll("__index__", laborIndex);
+
+                    laborList.insertAdjacentHTML(
+                        "beforeend",
+                        markup);
+
+                    laborIndex++;
+                });
+
+            document
+                .getElementById("add-detail-entry")
+                .addEventListener("click", function () {
+                    const markup = detailTemplate.innerHTML
+                        .replaceAll("__index__", detailIndex);
+
+                    detailList.insertAdjacentHTML(
+                        "beforeend",
+                        markup);
+
+                    detailIndex++;
+                });
+
+            document.addEventListener("click", function (event) {
+                const removeButton =
+                    event.target.closest("[data-remove-row]");
+
+                if (!removeButton) {
+                    return;
+                }
+
+                removeButton
+                    .closest(".work-log-entry-row")
+                    ?.remove();
+            });
+        });
+    </script>
+}

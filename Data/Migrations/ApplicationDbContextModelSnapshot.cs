@@ -270,6 +270,62 @@ namespace ToolLogix.Data.Migrations
                     b.ToTable("Assets");
                 });
 
+            modelBuilder.Entity("ToolLogix.Models.DetailUsage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("DetailNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkLogId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkLogId");
+
+                    b.ToTable("DetailUsages");
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.LaborEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Hours")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WorkLogId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkLogId");
+
+                    b.ToTable("LaborEntries");
+                });
+
             modelBuilder.Entity("ToolLogix.Models.ShopAnnouncement", b =>
                 {
                     b.Property<int>("Id")
@@ -305,6 +361,52 @@ namespace ToolLogix.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ShopAnnouncements");
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.WorkLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Issue")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime>("WorkDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("WorkDone")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("WorkOrderNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.ToTable("WorkLogs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -356,6 +458,46 @@ namespace ToolLogix.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.DetailUsage", b =>
+                {
+                    b.HasOne("ToolLogix.Models.WorkLog", "WorkLog")
+                        .WithMany("DetailsUsed")
+                        .HasForeignKey("WorkLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkLog");
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.LaborEntry", b =>
+                {
+                    b.HasOne("ToolLogix.Models.WorkLog", "WorkLog")
+                        .WithMany("LaborEntries")
+                        .HasForeignKey("WorkLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkLog");
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.WorkLog", b =>
+                {
+                    b.HasOne("ToolLogix.Models.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.WorkLog", b =>
+                {
+                    b.Navigation("DetailsUsed");
+
+                    b.Navigation("LaborEntries");
                 });
 #pragma warning restore 612, 618
         }

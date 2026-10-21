@@ -1,0 +1,581 @@
+﻿@model ToolLogix.Models.WorkLogIndexViewModel
+
+@{
+    ViewData["Title"] = "Work Logs";
+}
+
+<div class="work-logs-page">
+    <header class="work-logs-header">
+        <div>
+            <p class="work-logs-header__eyebrow">
+                Toolroom maintenance
+            </p>
+
+            <h1>Work Logs</h1>
+
+            <p>
+                Search, review, and create tooling work records.
+            </p>
+        </div>
+
+        <button type="button"
+                id="open-work-log-modal"
+                class="work-logs-create-button"
+                data-create-url="@Url.Action("Create", "WorkLogs", new { modal = true })">
+            + Create Work Log
+        </button>
+    </header>
+
+    <section class="work-log-filters"
+             aria-labelledby="work-log-filter-heading">
+
+        <h2 id="work-log-filter-heading">
+            Filter work logs
+        </h2>
+
+        <form asp-controller="WorkLogs"
+              asp-action="Index"
+              method="get">
+
+            <div class="work-log-filter-grid">
+                <div class="work-log-filter-field">
+                    <label asp-for="SearchTerm">
+                        Search
+                    </label>
+
+                    <input asp-for="SearchTerm"
+                           type="search"
+                           placeholder="Asset, product, work order, or work done" />
+                </div>
+
+                <div class="work-log-filter-field">
+                    <label asp-for="AssetId">
+                        Asset
+                    </label>
+
+                    <select asp-for="AssetId"
+                            asp-items="Model.AssetOptions">
+                        <option value="">All assets</option>
+                    </select>
+                </div>
+
+                <div class="work-log-filter-field">
+                    <label asp-for="StartDate">
+                        Start date
+                    </label>
+
+                    <input asp-for="StartDate"
+                           type="date" />
+                </div>
+
+                <div class="work-log-filter-field">
+                    <label asp-for="EndDate">
+                        End date
+                    </label>
+
+                    <input asp-for="EndDate"
+                           type="date" />
+                </div>
+            </div>
+
+            <div class="work-log-filter-actions">
+                <button type="submit">
+                    Apply filters
+                </button>
+
+                <a asp-controller="WorkLogs"
+                   asp-action="Index">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </section>
+
+    <section class="work-log-results"
+             aria-labelledby="work-log-results-heading">
+
+        <div class="work-log-results__header">
+            <div>
+                <p class="work-log-results__eyebrow">
+                    Work-log history
+                </p>
+
+                <h2 id="work-log-results-heading">
+                    Recorded work
+                </h2>
+            </div>
+
+            <span class="work-log-results__count">
+                @Model.WorkLogs.Count
+                record@(Model.WorkLogs.Count == 1 ? "" : "s")
+            </span>
+        </div>
+
+        <div class="work-log-table-wrapper">
+            <table class="work-log-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Asset</th>
+                        <th>Product</th>
+                        <th>Work order</th>
+                        <th>Issue</th>
+                        <th>Work done</th>
+                        <th>Details used</th>
+                        <th>Employees</th>
+                        <th class="work-log-table__hours">
+                            Hours
+                        </th>
+                        <th class="work-log-table__actions">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.WorkLogs.Count > 0)
+                    {
+                        @foreach (var workLog in Model.WorkLogs)
+                        {
+                            <tr>
+                                <td class="work-log-table__date">
+                                    @workLog.WorkDate.ToString("MM/dd/yyyy")
+                                </td>
+
+                                <td>
+                                    <strong>@workLog.AssetNumber</strong>
+                                </td>
+
+                                <td>
+                                    @(workLog.ProductNumber ?? "—")
+                                </td>
+
+                                <td>
+                                    @(workLog.WorkOrderNumber ?? "—")
+                                </td>
+
+                                <td class="work-log-table__issue">
+                                    @workLog.Issue
+                                </td>
+
+                                <td class="work-log-table__work">
+                                    @workLog.WorkDone
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(workLog.DetailsUsed)
+                                                                ? "—"
+                                                                : workLog.DetailsUsed)
+                                                                                  </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(workLog.Employees)
+                                                                ? "—"
+                                                                : workLog.Employees)
+                        </td>
+
+                                <td class="work-log-table__hours">
+                                    @workLog.TotalHours.ToString("0.00")
+                                </td>
+
+                                <td class="work-log-table__actions">
+                                    <span>Coming soon</span>
+                                </td>
+                            </tr>
+                                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10"
+                                class="work-log-table__empty">
+                                No work logs match the selected filters.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<dialog id="work-log-modal"
+        class="work-log-modal"
+        aria-labelledby="work-log-modal-title">
+
+    <div class="work-log-modal__header">
+        <div>
+            <p>Toolroom maintenance</p>
+            <h2 id="work-log-modal-title">Create Work Log</h2>
+        </div>
+
+        <button type="button"
+                class="work-log-modal__close"
+                data-close-work-log
+                aria-label="Close">
+            ×
+        </button>
+    </div>
+
+    <div id="work-log-modal-content"
+         class="work-log-modal__content">
+    </div>
+</dialog>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/work-logs.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/pages/work-log-quick-entry.css"
+          asp-append-version="true" />
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal =
+                document.getElementById("work-log-modal");
+
+            const modalContent =
+                document.getElementById("work-log-modal-content");
+
+            const openButton =
+                document.getElementById("open-work-log-modal");
+
+            function getNextIndex(list, collectionName) {
+                const indexInputs = list.querySelectorAll(
+                    `input[name="${collectionName}.Index"]`);
+
+                if (indexInputs.length === 0) {
+                    return 0;
+                }
+
+                const indexes = Array
+                    .from(indexInputs)
+                    .map(input => Number(input.value))
+                    .filter(value => Number.isFinite(value));
+
+                return indexes.length === 0
+                    ? 0
+                    : Math.max(...indexes) + 1;
+            }
+
+            function initializeQuickEntryForm() {
+                const form =
+                    modalContent.querySelector(
+                        "#quick-work-log-form");
+
+                if (!form) {
+                    return;
+                }
+
+                const laborList =
+                    form.querySelector("#labor-entry-list");
+
+                const detailList =
+                    form.querySelector("#detail-entry-list");
+
+                const laborTemplate =
+                    modalContent.querySelector(
+                        "#labor-entry-template");
+
+                const detailTemplate =
+                    modalContent.querySelector(
+                        "#detail-entry-template");
+
+                const addLaborButton =
+                    form.querySelector("#add-labor-entry");
+
+                const addDetailButton =
+                    form.querySelector("#add-detail-entry");
+
+                let laborIndex =
+                    getNextIndex(
+                        laborList,
+                        "LaborEntries");
+
+                let detailIndex =
+                    getNextIndex(
+                        detailList,
+                        "DetailsUsed");
+
+                addLaborButton.addEventListener(
+                    "click",
+                    function () {
+                        const markup =
+                            laborTemplate.innerHTML.replaceAll(
+                                "__index__",
+                                laborIndex);
+
+                        laborList.insertAdjacentHTML(
+                            "beforeend",
+                            markup);
+
+                        const addedRow =
+                            laborList.lastElementChild;
+
+                        addedRow
+                            ?.querySelector("select")
+                            ?.focus();
+
+                        laborIndex++;
+                    });
+
+                addDetailButton.addEventListener(
+                    "click",
+                    function () {
+                        const markup =
+                            detailTemplate.innerHTML.replaceAll(
+                                "__index__",
+                                detailIndex);
+
+                        detailList.insertAdjacentHTML(
+                            "beforeend",
+                            markup);
+
+                        const addedRow =
+                            detailList.lastElementChild;
+
+                        addedRow
+                            ?.querySelector(
+                                'input[name$=".DetailNumber"]')
+                            ?.focus();
+
+                        detailIndex++;
+                    });
+
+                // Activate client-side validation for the form
+                // that was loaded after the page opened.
+                if (window.jQuery &&
+                    window.jQuery.validator &&
+                    window.jQuery.validator.unobtrusive) {
+
+                    window.jQuery.validator.unobtrusive.parse(form);
+                }
+
+                    form.addEventListener(
+        "submit",
+        async function (event) {
+            event.preventDefault();
+
+            /*
+             * Run the ASP.NET client validation first.
+             */
+            if (window.jQuery &&
+                window.jQuery.validator &&
+                !window.jQuery(form).valid()) {
+                return;
+            }
+
+            const submitButton =
+                form.querySelector(
+                    'button[type="submit"]');
+
+            const originalButtonText =
+                submitButton.textContent;
+
+            submitButton.disabled = true;
+            submitButton.textContent = "Saving…";
+
+            try {
+                const response = await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+                        body: new FormData(form),
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    });
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Unable to save work log.");
+                }
+
+                const contentType =
+                    response.headers.get(
+                        "content-type") || "";
+
+                /*
+                 * A successful save returns JSON.
+                 */
+                if (contentType.includes(
+                    "application/json")) {
+
+                    const result =
+                        await response.json();
+
+                    if (result.success &&
+                        result.redirectUrl) {
+
+                        window.location.href =
+                            result.redirectUrl;
+
+                        return;
+                    }
+                }
+
+                /*
+                 * Failed server validation returns the
+                 * form partial containing error messages.
+                 */
+                modalContent.innerHTML =
+                    await response.text();
+
+                initializeQuickEntryForm();
+
+                modalContent.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+            catch (error) {
+                submitButton.disabled = false;
+                submitButton.textContent =
+                    originalButtonText;
+
+                let errorMessage =
+                    form.querySelector(
+                        ".quick-work-log-save-error");
+
+                if (!errorMessage) {
+                    errorMessage =
+                        document.createElement("div");
+
+                    errorMessage.className =
+                        "quick-work-log-save-error";
+
+                    form.prepend(errorMessage);
+                }
+
+                errorMessage.textContent =
+                    "The work log could not be saved. " +
+                    "Please try again.";
+            }
+        });
+            }
+
+            openButton.addEventListener(
+                "click",
+                async function () {
+                    modalContent.innerHTML =
+                        '<p class="work-log-modal__loading">' +
+                        'Loading form…</p>';
+
+                    modal.showModal();
+
+                    try {
+                        const response = await fetch(
+                            openButton.dataset.createUrl,
+                            {
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            });
+
+                        if (!response.ok) {
+                            throw new Error(
+                                "Unable to load form.");
+                        }
+
+                        modalContent.innerHTML =
+                            await response.text();
+
+                        initializeQuickEntryForm();
+                    }
+                    catch (error) {
+                        modalContent.innerHTML =
+                            '<p class="work-log-modal__loading">' +
+                            'Unable to load the work-log form.' +
+                            '</p>';
+                    }
+                });
+
+            document.addEventListener(
+                "click",
+                function (event) {
+                    const closeButton =
+                        event.target.closest(
+                            "[data-close-work-log]");
+
+                    if (closeButton) {
+                        modal.close();
+                        return;
+                    }
+
+                    const removeButton =
+                        event.target.closest(
+                            "[data-remove-row]");
+
+                    if (!removeButton ||
+                        !modal.contains(removeButton)) {
+                        return;
+                    }
+
+                    const row =
+                        removeButton.closest(
+                            ".quick-entry-row");
+
+                    if (!row) {
+                        return;
+                    }
+
+                    const list =
+                        row.parentElement;
+
+                    const isLaborRow =
+                        row.classList.contains(
+                            "labor-entry-row");
+
+                    /*
+                     * Keep at least one labor row because the
+                     * controller requires a labor entry.
+                     */
+                    if (isLaborRow &&
+                        list.querySelectorAll(
+                            ".labor-entry-row").length === 1) {
+
+                        const employee =
+                            row.querySelector("select");
+
+                        const hours =
+                            row.querySelector(
+                                'input[name$=".Hours"]');
+
+                        if (employee) {
+                            employee.value = "";
+                        }
+
+                        if (hours) {
+                            hours.value = "";
+                        }
+
+                        employee?.focus();
+                        return;
+                    }
+
+                    row.remove();
+                });
+
+            modal.addEventListener(
+                "click",
+                function (event) {
+                    if (event.target === modal) {
+                        modal.close();
+                    }
+                });
+
+            modal.addEventListener(
+                "close",
+                function () {
+                    modalContent.innerHTML = "";
+                });
+        });
+    </script>
+}

@@ -1,0 +1,268 @@
+﻿@model ToolLogix.Models.CreateWorkLogViewModel
+
+<form asp-controller="WorkLogs"
+      asp-action="Create"
+      method="post"
+      id="quick-work-log-form"
+      class="quick-work-log-form">
+
+    <input type="hidden"
+           name="modal"
+           value="true" />
+
+    <div asp-validation-summary="All"
+         class="create-work-log-validation">
+    </div>
+
+    <div class="quick-work-log-general">
+        <div class="work-log-form-field">
+            <label asp-for="WorkDate"></label>
+
+            <input asp-for="WorkDate"
+                   type="date" />
+
+            <span asp-validation-for="WorkDate"></span>
+        </div>
+
+        <div class="work-log-form-field quick-work-log-asset">
+            <label asp-for="AssetId"></label>
+
+            <select asp-for="AssetId"
+                    asp-items="Model.AssetOptions"
+                    autofocus>
+                <option value="">Select an asset</option>
+            </select>
+
+            <span asp-validation-for="AssetId"></span>
+        </div>
+
+        <div class="work-log-form-field">
+            <label asp-for="WorkOrderNumber"></label>
+
+            <input asp-for="WorkOrderNumber"
+                   placeholder="WO-1008" />
+
+            <span asp-validation-for="WorkOrderNumber"></span>
+        </div>
+    </div>
+
+    <div class="quick-work-log-text">
+        <div class="work-log-form-field">
+            <label asp-for="Issue"></label>
+
+            <textarea asp-for="Issue"
+                      rows="3"
+                      placeholder="Why was work required?"></textarea>
+
+            <span asp-validation-for="Issue"></span>
+        </div>
+
+        <div class="work-log-form-field">
+            <label asp-for="WorkDone"></label>
+
+            <textarea asp-for="WorkDone"
+                      rows="3"
+                      placeholder="What work was performed?"></textarea>
+
+            <span asp-validation-for="WorkDone"></span>
+        </div>
+    </div>
+
+    <section class="quick-entry-section">
+        <div class="quick-entry-section__header">
+            <h3>Labor</h3>
+
+            <button id="add-labor-entry"
+                    type="button"
+                    class="quick-entry-add">
+                + Add row
+            </button>
+        </div>
+
+        <div asp-validation-for="LaborEntries"
+             class="work-log-section-validation">
+        </div>
+
+        <div class="quick-entry-grid quick-entry-grid--labor">
+            <div class="quick-entry-grid__heading">Employee</div>
+            <div class="quick-entry-grid__heading">Hours</div>
+            <div class="quick-entry-grid__heading"></div>
+
+            <div id="labor-entry-list"
+                 class="quick-entry-grid__rows">
+                @for (var i = 0; i < Model.LaborEntries.Count; i++)
+                {
+                    <div class="quick-entry-row labor-entry-row">
+                        <input type="hidden"
+                               name="LaborEntries.Index"
+                               value="@i" />
+
+                        <select asp-for="LaborEntries[i].UserId"
+                                asp-items="Model.EmployeeOptions">
+                            <option value="">Select employee</option>
+                        </select>
+
+                        <input asp-for="LaborEntries[i].Hours"
+                               type="number"
+                               min="0.25"
+                               max="16"
+                               step="0.25"
+                               placeholder="0.25" />
+
+                        <button type="button"
+                                class="quick-entry-remove"
+                                data-remove-row
+                                aria-label="Remove labor row">
+                            ×
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-entry-section">
+        <div class="quick-entry-section__header">
+            <h3>Details used</h3>
+
+            <button id="add-detail-entry"
+                    type="button"
+                    class="quick-entry-add">
+                + Add row
+            </button>
+        </div>
+
+        <div asp-validation-for="DetailsUsed"
+             class="work-log-section-validation">
+        </div>
+
+        <div class="quick-entry-grid quick-entry-grid--details">
+            <div class="quick-entry-grid__heading">Detail number</div>
+            <div class="quick-entry-grid__heading">Description</div>
+            <div class="quick-entry-grid__heading">Qty</div>
+            <div class="quick-entry-grid__heading"></div>
+
+            <div id="detail-entry-list"
+                 class="quick-entry-grid__rows">
+                @for (var i = 0; i < Model.DetailsUsed.Count; i++)
+                {
+                    <div class="quick-entry-row detail-entry-row">
+                        <input type="hidden"
+                               name="DetailsUsed.Index"
+                               value="@i" />
+
+                        <input asp-for="DetailsUsed[i].DetailNumber"
+                               placeholder="298" />
+
+                        <input asp-for="DetailsUsed[i].Description"
+                               placeholder="Optional description" />
+
+                        <input asp-for="DetailsUsed[i].Quantity"
+                               type="number"
+                               min="1"
+                               max="1000"
+                               step="1" />
+
+                        <button type="button"
+                                class="quick-entry-remove"
+                                data-remove-row
+                                aria-label="Remove detail row">
+                            ×
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <details class="quick-work-log-notes">
+        <summary>Additional notes</summary>
+
+        <div class="work-log-form-field">
+            <textarea asp-for="Notes"
+                      rows="3"
+                      placeholder="Follow-up information or recommendations"></textarea>
+
+            <span asp-validation-for="Notes"></span>
+        </div>
+    </details>
+
+    <div class="quick-work-log-actions">
+        <button type="button"
+                class="quick-work-log-cancel"
+                data-close-work-log>
+            Cancel
+        </button>
+
+        <button type="submit"
+                class="create-work-log-submit">
+            Save Work Log
+        </button>
+    </div>
+</form>
+
+<template id="labor-entry-template">
+    <div class="quick-entry-row labor-entry-row">
+        <input type="hidden"
+               name="LaborEntries.Index"
+               value="__index__" />
+
+        <select id="LaborEntries___index___UserId"
+                name="LaborEntries[__index__].UserId">
+            <option value="">Select employee</option>
+
+            @foreach (var employee in Model.EmployeeOptions)
+            {
+                <option value="@employee.Value">
+                    @employee.Text
+                </option>
+            }
+        </select>
+
+        <input id="LaborEntries___index___Hours"
+               name="LaborEntries[__index__].Hours"
+               type="number"
+               min="0.25"
+               max="16"
+               step="0.25"
+               placeholder="0.25" />
+
+        <button type="button"
+                class="quick-entry-remove"
+                data-remove-row
+                aria-label="Remove labor row">
+            ×
+        </button>
+    </div>
+</template>
+
+<template id="detail-entry-template">
+    <div class="quick-entry-row detail-entry-row">
+        <input type="hidden"
+               name="DetailsUsed.Index"
+               value="__index__" />
+
+        <input id="DetailsUsed___index___DetailNumber"
+               name="DetailsUsed[__index__].DetailNumber"
+               placeholder="Detail number" />
+
+        <input id="DetailsUsed___index___Description"
+               name="DetailsUsed[__index__].Description"
+               placeholder="Optional description" />
+
+        <input id="DetailsUsed___index___Quantity"
+               name="DetailsUsed[__index__].Quantity"
+               type="number"
+               min="1"
+               max="1000"
+               step="1"
+               value="1" />
+
+        <button type="button"
+                class="quick-entry-remove"
+                data-remove-row
+                aria-label="Remove detail row">
+            ×
+        </button>
+    </div>
+</template>

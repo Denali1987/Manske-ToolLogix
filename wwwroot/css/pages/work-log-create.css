@@ -1,0 +1,369 @@
+﻿/* ToolLogix create work log page */
+
+.create-work-log-page {
+    width: min(1120px, 100%);
+    margin: 0 auto;
+    padding: 10px 0 48px;
+}
+
+/* Header */
+
+.create-work-log-header {
+    margin-bottom: 26px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.create-work-log-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+    .create-work-log-back:hover {
+        color: var(--accent-color);
+    }
+
+.create-work-log-header__eyebrow,
+.work-log-form-section__eyebrow {
+    margin: 0 0 5px;
+    color: var(--accent-color);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.create-work-log-header h1 {
+    margin: 0 0 6px;
+    color: var(--text-primary);
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+}
+
+.create-work-log-header > div > p:last-child {
+    max-width: 700px;
+    margin: 0;
+    color: var(--text-muted);
+}
+
+/* Validation */
+
+.create-work-log-validation {
+    margin-bottom: 20px;
+    color: #b4232f;
+    font-size: 0.88rem;
+    font-weight: 650;
+}
+
+    .create-work-log-validation:empty {
+        display: none;
+    }
+
+    .create-work-log-validation ul {
+        margin: 0;
+        padding: 14px 18px 14px 36px;
+        background: rgba(227, 38, 54, 0.08);
+        border: 1px solid rgba(227, 38, 54, 0.3);
+        border-radius: 7px;
+    }
+
+.work-log-section-validation {
+    display: block;
+    margin: 0 0 14px;
+    color: #b4232f;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.field-validation-error {
+    display: block;
+    margin-top: 5px;
+    color: #b4232f;
+    font-size: 0.78rem;
+    font-weight: 650;
+}
+
+/* Form sections */
+
+.create-work-log-form {
+    display: grid;
+    gap: 22px;
+}
+
+.work-log-form-section {
+    padding: clamp(22px, 4vw, 32px);
+    background: var(--surface-background);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--accent-color);
+    border-radius: 10px;
+    box-shadow: inset 12px 0 22px -16px rgba(227, 38, 54, 1), -4px 0 16px rgba(227, 38, 54, 0.1), 0 10px 28px rgba(22, 29, 38, 0.08);
+}
+
+.work-log-form-section__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+    .work-log-form-section__header h2 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 800;
+    }
+
+    .work-log-form-section__header p:last-child {
+        max-width: 650px;
+        margin: 7px 0 0;
+        color: var(--text-muted);
+        font-size: 0.88rem;
+    }
+
+.work-log-form-grid {
+    display: grid;
+    grid-template-columns: 180px minmax(220px, 1fr) minmax(220px, 1fr);
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+/* Form fields */
+
+.work-log-form-field {
+    min-width: 0;
+}
+
+.work-log-form-field--full {
+    margin-top: 18px;
+}
+
+.work-log-form-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--text-primary);
+    font-size: 0.84rem;
+    font-weight: 750;
+}
+
+.work-log-form-field input,
+.work-log-form-field select,
+.work-log-form-field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    color: var(--text-primary);
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.work-log-form-field input,
+.work-log-form-field select {
+    min-height: 44px;
+}
+
+.work-log-form-field textarea {
+    min-height: 110px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+    .work-log-form-field input::placeholder,
+    .work-log-form-field textarea::placeholder {
+        color: var(--text-muted);
+        opacity: 0.76;
+    }
+
+    .work-log-form-field input:focus,
+    .work-log-form-field select:focus,
+    .work-log-form-field textarea:focus {
+        background: var(--surface-background);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(227, 38, 54, 0.2);
+    }
+
+.work-log-form-field .input-validation-error {
+    border-color: #c92736;
+    box-shadow: 0 0 0 0.15rem rgba(201, 39, 54, 0.14);
+}
+
+/* Labor and detail entries */
+
+.work-log-entry-list {
+    display: grid;
+    gap: 12px;
+}
+
+.work-log-entry-row {
+    display: grid;
+    align-items: end;
+    gap: 14px;
+    padding: 16px;
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.labor-entry-row {
+    grid-template-columns: minmax(220px, 1fr) 160px auto;
+}
+
+.detail-entry-row {
+    grid-template-columns: minmax(170px, 0.8fr) minmax(250px, 1.5fr) 120px auto;
+}
+
+.work-log-add-button {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 8px 14px;
+    color: #fff;
+    background: linear-gradient(135deg, #e32636, #ad1724);
+    border: 1px solid #f0404f;
+    border-radius: 6px;
+    box-shadow: 0 6px 16px rgba(227, 38, 54, 0.3);
+    font-size: 0.82rem;
+    font-weight: 750;
+    cursor: pointer;
+    transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .work-log-add-button:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(227, 38, 54, 0.46);
+    }
+
+.work-log-remove-button {
+    min-height: 40px;
+    padding: 8px 12px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+    .work-log-remove-button:hover {
+        color: #b4232f;
+        background: rgba(227, 38, 54, 0.07);
+        border-color: rgba(227, 38, 54, 0.45);
+    }
+
+/* Page actions */
+
+.create-work-log-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    padding-top: 4px;
+}
+
+.create-work-log-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 10px 20px;
+    color: var(--text-muted);
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 750;
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+    .create-work-log-cancel:hover {
+        color: var(--text-primary);
+        background: var(--surface-background);
+        border-color: var(--text-muted);
+    }
+
+.create-work-log-submit {
+    min-height: 46px;
+    padding: 10px 24px;
+    color: #fff;
+    background: linear-gradient(135deg, #e32636, #ad1724);
+    border: 1px solid #f0404f;
+    border-radius: 6px;
+    box-shadow: 0 8px 20px rgba(227, 38, 54, 0.4);
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .create-work-log-submit:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(227, 38, 54, 0.55);
+    }
+
+/* Responsive layout */
+
+@media (max-width: 850px) {
+    .work-log-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .labor-entry-row,
+    .detail-entry-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+        .detail-entry-row .work-log-remove-button {
+            grid-column: 2;
+        }
+}
+
+@media (max-width: 650px) {
+    .work-log-form-section__header {
+        flex-direction: column;
+    }
+
+    .work-log-add-button {
+        width: 100%;
+    }
+
+    .labor-entry-row,
+    .detail-entry-row {
+        grid-template-columns: 1fr;
+    }
+
+        .detail-entry-row .work-log-remove-button {
+            grid-column: auto;
+        }
+
+    .create-work-log-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .create-work-log-cancel,
+    .create-work-log-submit {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .work-log-form-section {
+        padding: 20px 16px;
+    }
+
+    .work-log-entry-row {
+        padding: 14px 12px;
+    }
+}
