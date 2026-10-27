@@ -136,7 +136,9 @@ namespace ToolLogix.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create(bool modal = false)
+        public async Task<IActionResult> Create(
+            int? assetId = null,
+            bool modal = false)
         {
             var currentUserId =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -146,7 +148,10 @@ namespace ToolLogix.Controllers
                 return Challenge();
             }
 
-            var viewModel = new CreateWorkLogViewModel();
+            var viewModel = new CreateWorkLogViewModel
+            {
+                AssetId = assetId
+            };
 
             viewModel.LaborEntries[0].UserId = currentUserId;
 

@@ -74,14 +74,98 @@
                     <h2>Recent work</h2>
                 </div>
 
-                <button type="button" disabled>
-                    Add work log
-                </button>
+                <div class="asset-work-log-actions">
+                    @if (Model.TotalWorkLogCount > Model.RecentWorkLogs.Count)
+                    {
+                        <a class="asset-work-log-link asset-work-log-link--secondary"
+                           asp-controller="WorkLogs"
+                           asp-action="Index"
+                           asp-route-assetId="@Model.Asset.Id">
+                            View all @Model.TotalWorkLogCount
+                        </a>
+                    }
+
+                    <a class="asset-work-log-link"
+                       asp-controller="WorkLogs"
+                       asp-action="Create"
+                       asp-route-assetId="@Model.Asset.Id">
+                        + Add work log
+                    </a>
+                </div>
             </div>
 
-            <p class="asset-section-card__empty">
-                Work-log information will appear here.
-            </p>
+            @if (Model.RecentWorkLogs.Count > 0)
+            {
+                <div class="asset-work-log-table-wrapper">
+                    <table class="asset-work-log-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Work Order</th>
+                                <th>Issue</th>
+                                <th>Work Done</th>
+                                <th>Employees</th>
+                                <th>Details Used</th>
+                                <th class="asset-work-log-table__hours">Hours</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var workLog in Model.RecentWorkLogs)
+                            {
+                                <tr>
+                                    <td class="asset-work-log-table__date">
+                                        @workLog.WorkDate.ToString("MM/dd/yyyy")
+                                    </td>
+
+                                    <td>
+                                        @(workLog.WorkOrderNumber ?? "-")
+                                    </td>
+
+                                    <td class="asset-work-log-table__text">
+                                        @workLog.Issue
+                                    </td>
+
+                                    <td class="asset-work-log-table__text">
+                                        @workLog.WorkDone
+                                    </td>
+                                    
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(workLog.Employees)
+                                            ? "-"
+                                            : workLog.Employees)
+                                    </td>
+
+                                    <td>@(string.IsNullOrWhiteSpace(workLog.DetailsUsed)
+                                        ? "-"
+                                        : workLog.DetailsUsed)
+                                    </td>
+
+                                    <td class="asset-work-log-table__hours">
+                                        @workLog.TotalHours.ToString("0.00")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (Model.TotalWorkLogCount <= Model.RecentWorkLogs.Count)
+                {
+                    <a class="asset-work-log-view-all"
+                       asp-controller="WorkLogs"
+                       asp-action="Index"
+                       asp-route-assetId="@Model.Asset.Id">
+                        View all work logs for @Model.Asset.AssetNumber →
+                    </a>
+                }
+            }
+            else
+            {
+                <p class="asset-section-card__empty">
+                    No work logs have been recorded for this asset.
+                </p>
+            }
         </article>
 
         <article class="asset-section-card">
