@@ -65,6 +65,9 @@ namespace ToolLogix.Models
         [StringLength(300)]
         public string? Description { get; set; }
 
+        [Display(Name = "Taken By")]
+        public string? UsedByUserId { get; set; }
+
         [Range(1, 1000)]
         public int Quantity { get; set; } = 1;
     }

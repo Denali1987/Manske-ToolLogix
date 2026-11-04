@@ -31,7 +31,7 @@
           method="post"
           class="create-work-log-form">
 
-        <div asp-validation-summary="ModelOnly"
+        <div asp-validation-summary="All"
              class="create-work-log-validation">
         </div>
 
@@ -260,6 +260,17 @@
                             </span>
                         </div>
 
+                        <div class="work-log-form-field">
+                            <label asp-for="DetailsUsed[i].UsedByUserId">
+                                Taken by
+                            </label>
+
+                            <select asp-for="DetailsUsed[i].UsedByUserId"
+                                    asp-items="Model.EmployeeOptions">
+                                <option value="">Select an employee</option>
+                        </select>
+                    </div>
+
                         <button type="button"
                                 class="work-log-remove-button"
                                 data-remove-row>
@@ -371,6 +382,24 @@
                    value="1" />
         </div>
 
+        <div class="work-log-form-field">
+            <label for="DetailsUsed___index___UsedByUserId">
+                Taken by
+            </label>
+
+            <select id="DetailsUsed___index___UsedByUserId"
+                    name="DetailsUsed[__index__].UsedByUserId">
+                <option value="">Select an employee</option>
+
+                @foreach (var employee in Model.EmployeeOptions)
+                {
+                    <option value="@employee.Value">
+                        @employee.Text
+                    </option>
+                }
+            </select>
+        </div>
+
         <button type="button"
                 class="work-log-remove-button"
                 data-remove-row>
@@ -402,8 +431,8 @@
             const detailTemplate =
                 document.getElementById("detail-entry-template");
 
-            let laborIndex = @Model.LaborEntries.Count;
-            let detailIndex = @Model.DetailsUsed.Count;
+            let laborIndex = Number("@Model.LaborEntries.Count");
+            let detailIndex = Number("@Model.DetailsUsed.Count");
 
             document
                 .getElementById("add-labor-entry")

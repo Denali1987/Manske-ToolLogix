@@ -49,8 +49,8 @@
         list-style: none;
     }
 
-        .announcement-composer > summary::-webkit-details-marker {
-            display: none;
+        .announcement-composer > summary::marker {
+            content: "";
         }
 
 .announcement-button {

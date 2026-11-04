@@ -64,7 +64,8 @@
     </section>
 
     <section class="asset-activity-grid">
-        <article class="asset-section-card">
+        <!-- Full-width Work Logs card -->
+        <article class="asset-section-card asset-section-card--work-logs">
             <div class="asset-section-card__header">
                 <div>
                     <p class="asset-section-card__eyebrow">
@@ -104,6 +105,7 @@
                                 <th>Work Order</th>
                                 <th>Issue</th>
                                 <th>Work Done</th>
+                                <th>Notes</th>
                                 <th>Employees</th>
                                 <th>Details Used</th>
                                 <th class="asset-work-log-table__hours">Hours</th>
@@ -130,13 +132,20 @@
                                         @workLog.WorkDone
                                     </td>
                                     
+                                    <td class="asset-work-log-table__text">
+                                        @(string.IsNullOrWhiteSpace(workLog.Notes)
+                                            ? "-"
+                                            : workLog.Notes)
+                                    </td>
+
                                     <td>
                                         @(string.IsNullOrWhiteSpace(workLog.Employees)
                                             ? "-"
                                             : workLog.Employees)
                                     </td>
 
-                                    <td>@(string.IsNullOrWhiteSpace(workLog.DetailsUsed)
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(workLog.DetailsUsed)
                                         ? "-"
                                         : workLog.DetailsUsed)
                                     </td>
@@ -168,36 +177,139 @@
             }
         </article>
 
-        <article class="asset-section-card">
+        <!-- Half-width Labor card -->
+        <article class="asset-section-card asset-section-card--half">
             <div class="asset-section-card__header">
                 <div>
                     <p class="asset-section-card__eyebrow">
                         Labor
                     </p>
 
-                    <h2>Recent labor charges</h2>
+                    <h2>Labor charges</h2>
                 </div>
+
+                <form asp-controller="Assets"
+                      asp-action="Details"
+                      method="get"
+                      class="asset-period-filter">
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.Asset.Id" />
+
+                    <label for="laborDays">Past</label>
+
+                    <input id="laborDays"
+                           name="laborDays"
+                           type="number"
+                           min="1"
+                           max="365"
+                           value="@Model.LaborDays"
+                           aria-label="Number of labor days" />
+
+                    <span>day@(Model.LaborDays == 1 ? "" : "s")</span>
+
+                    <button type="submit">Apply</button>
+                </form>
             </div>
 
-            <p class="asset-section-card__empty">
-                Labor-charge information will appear here.
-            </p>
+            <div class="asset-summary-metric">
+                <strong>@Model.LaborTotalHours.ToString("0.00")</strong>
+                <span>total labor hours</span>
+            </div>
+
+            @if (Model.LaborCharges.Count > 0)
+            {
+                <div class="asset-summary-table-wrapper">
+                    <table class="asset-summary-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Employee</th>
+                                <th>Work order</th>
+                                <th class="asset-summary-table__number">Hours</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var labor in Model.LaborCharges)
+                            {
+                                <tr>
+                                    <td>@labor.WorkDate.ToString("MM/dd/yyyy")</td>
+                                    <td>@labor.EmployeeName</td>
+                                    <td>@(labor.WorkOrderNumber ?? "—")</td>
+                                    <td class="asset-summary-table__number">
+                                        @labor.Hours.ToString("0.00")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="asset-section-card__empty asset-section-card__empty--compact">
+                    No labor was charged during this period.
+                </p>
+            }
         </article>
 
-        <article class="asset-section-card">
+        <!-- Half-width Inventory card -->
+        <article class="asset-section-card asset-section-card--half">
             <div class="asset-section-card__header">
                 <div>
                     <p class="asset-section-card__eyebrow">
                         Inventory
                     </p>
 
-                    <h2>Recently used spares</h2>
+                    <h2>Recently used details</h2>
                 </div>
             </div>
 
-            <p class="asset-section-card__empty">
-                Spare usage will appear here.
-            </p>
+            @if (Model.RecentDetailUsages.Count > 0)
+            {
+                <div class="asset-summary-table-wrapper asset-summary-table-wrapper--details">
+                    <table class="asset-summary-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Detail</th>
+                                <th class="asset-summary-table__number">Qty</th>
+                                <th>Taken by</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var detail in Model.RecentDetailUsages)
+                            {
+                                <tr>
+                                    <td>@detail.WorkDate.ToString("MM/dd/yyyy")</td>
+                                    <td>
+                                        <strong>@detail.DetailNumber</strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(detail.Description))
+                                        {
+                                            <span class="asset-detail-description">
+                                                @detail.Description
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="asset-summary-table__number">
+                                        @detail.Quantity
+                                    </td>
+                                    <td>@detail.UsedByName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="asset-section-card__empty asset-section-card__empty--compact">
+                    No details have been recorded for this asset.
+                </p>
+            }
         </article>
     </section>
 

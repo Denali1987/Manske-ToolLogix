@@ -217,7 +217,7 @@
 }
 
 .detail-entry-row {
-    grid-template-columns: minmax(170px, 0.8fr) minmax(250px, 1.5fr) 120px auto;
+    grid-template-columns: minmax(150px, 0.75fr) minmax(220px, 1.3fr) 100px minmax(180px, 1fr) auto;
 }
 
 .work-log-add-button {

@@ -109,6 +109,7 @@ namespace ToolLogix.Controllers
                         WorkOrderNumber = workLog.WorkOrderNumber,
                         Issue = workLog.Issue,
                         WorkDone = workLog.WorkDone,
+                        Notes = workLog.Notes,
 
                         Employees = string.Join(
                             ", ",
@@ -229,6 +230,18 @@ namespace ToolLogix.Controllers
                 ModelState.AddModelError(
                     nameof(viewModel.DetailsUsed),
                     "Each detail entry must include a detail number.");
+            }
+
+            var detailsWithoutEmployee = viewModel.DetailsUsed
+                .Any(detail =>
+                    !string.IsNullOrWhiteSpace(detail.DetailNumber) &&
+                    string.IsNullOrWhiteSpace(detail.UsedByUserId));
+
+            if (detailsWithoutEmployee)
+            {
+                ModelState.AddModelError(
+                    nameof(viewModel.DetailsUsed),
+                    "Select the employee who took each detail.");
             }
 
             if (!ModelState.IsValid)

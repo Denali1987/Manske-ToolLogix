@@ -272,7 +272,7 @@
 
 .quick-entry-grid--details {
     display: grid;
-    grid-template-columns: minmax(170px, 0.8fr) minmax(280px, 1.5fr) 90px 48px;
+    grid-template-columns: minmax(150px, 0.75fr) minmax(230px, 1.3fr) 80px minmax(190px, 1fr) 48px;
 }
 
 .quick-entry-grid__rows {
@@ -420,7 +420,7 @@ button.work-logs-create-button {
     }
 
     .quick-entry-grid--details {
-        min-width: 720px;
+        min-width: 900px;
     }
 }
 

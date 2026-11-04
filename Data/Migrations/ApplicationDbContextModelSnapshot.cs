@@ -290,6 +290,9 @@ namespace ToolLogix.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("UsedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("WorkLogId")
                         .HasColumnType("int");
 

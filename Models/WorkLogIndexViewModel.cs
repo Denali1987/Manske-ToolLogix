@@ -35,6 +35,8 @@ namespace ToolLogix.Models
 
         public string WorkDone { get; set; } = string.Empty;
 
+        public string? Notes { get; set; }
+
         public string Employees { get; set; } = string.Empty;
 
         public string DetailsUsed { get; set; } = string.Empty;
