@@ -1,0 +1,332 @@
+﻿@model ToolLogix.Models.DowntimeDashboardViewModel
+
+@{
+    ViewData["Title"] = "Downtimes";
+}
+
+<div class="downtimes-page">
+    <header class="downtimes-header">
+        <div>
+            <p class="downtimes-header__eyebrow">
+                Toolroom workload
+            </p>
+
+            <h1>Downtimes</h1>
+
+            <p>
+                Analyze the current tool repair and changeover queue.
+            </p>
+        </div>
+
+        @if (Model.AsOfTime.HasValue)
+        {
+            <div class="downtimes-as-of">
+                <span>CSV data as of</span>
+
+                <strong>
+                    @Model.AsOfTime.Value.ToString("MM/dd/yyyy h:mm tt")
+                </strong>
+
+                <small>@Model.FileName</small>
+            </div>
+        }
+    </header>
+
+    <section class="downtime-upload-card">
+        <div>
+            <p class="downtime-upload-card__eyebrow">
+                Import
+            </p>
+
+            <h2>Load downtime data</h2>
+
+            <p>
+                Select the latest downtime CSV export to refresh this page.
+            </p>
+        </div>
+
+        <form asp-controller="Downtimes"
+              asp-action="Index"
+              method="post"
+              enctype="multipart/form-data"
+              class="downtime-upload-form">
+
+            <div class="downtime-upload-field">
+                <label asp-for="CsvFile"></label>
+
+                <input asp-for="CsvFile"
+                       type="file"
+                       accept=".csv,text/csv" />
+
+                <span asp-validation-for="CsvFile"></span>
+            </div>
+
+            <button type="submit">
+                Analyze CSV
+            </button>
+        </form>
+
+        <div asp-validation-summary="ModelOnly"
+             class="downtime-validation">
+        </div>
+    </section>
+
+    @if (Model.AsOfTime.HasValue)
+    {
+        <section class="downtime-summary"
+                 aria-label="Current downtime summary">
+
+            <article class="downtime-summary-card downtime-summary-card--repair">
+                <span>Repair in process</span>
+                <strong>@Model.RepairInProcessCount</strong>
+            </article>
+
+            <article class="downtime-summary-card downtime-summary-card--changeover">
+                <span>Changeovers in process</span>
+                <strong>@Model.ChangeoverInProcessCount</strong>
+            </article>
+
+            <article class="downtime-summary-card downtime-summary-card--waiting">
+                <span>Waiting for repair</span>
+                <strong>@Model.WaitingForRepairCount</strong>
+            </article>
+
+            <article class="downtime-summary-card downtime-summary-card--waiting">
+                <span>Waiting for changeover</span>
+                <strong>@Model.WaitingForChangeoverCount</strong>
+            </article>
+        </section>
+
+        @if (Model.Warnings.Count > 0)
+        {
+            <aside class="downtime-warnings">
+                <strong>Data notes</strong>
+
+                <ul>
+                    @foreach (var warning in Model.Warnings)
+                    {
+                        <li>@warning</li>
+                    }
+                </ul>
+            </aside>
+        }
+
+        <section class="downtime-results-card"
+                 aria-labelledby="active-downtimes-heading">
+
+            <div class="downtime-results-card__header">
+                <div>
+                    <p class="downtime-results-card__eyebrow">
+                        Active toolroom work
+                    </p>
+
+                    <h2 id="active-downtimes-heading">
+                        Currently in process
+                    </h2>
+                </div>
+
+                <span class="downtime-results-card__count">
+                    @Model.InProcess.Count
+                    press@(Model.InProcess.Count == 1 ? "" : "es")
+                </span>
+            </div>
+
+            <div class="downtime-table-wrapper">
+                <table class="downtime-table">
+                    <thead>
+                        <tr>
+                            <th>Press</th>
+                            <th>Status</th>
+                            <th>Tool</th>
+                            <th>Work order</th>
+                            <th>Part number</th>
+                            <th>Employee</th>
+                            <th>Started</th>
+                            <th>Time in code</th>
+                            <th>Costing</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.InProcess.Count > 0)
+                        {
+                            @foreach (var row in Model.InProcess)
+                            {
+                                var statusClass =
+                                row.Status == "Tool Repair"
+                                ? "downtime-status--repair"
+                                : "downtime-status--changeover";
+
+                                <tr>
+                                    <td>
+                                        <strong>@row.WorkCenter</strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="downtime-status @statusClass">
+                                            @row.Status
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(row.Tool)
+                                                                    ? "—"
+                                                                    : row.Tool)
+                                                                           </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(row.WorkOrder)
+                                                                    ? "—"
+                                                                    : row.WorkOrder)
+                                                                                </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(row.PartNumber)
+                                                                    ? "—"
+                                                                    : row.PartNumber)
+                        </td>
+
+                                    <td>@row.EmployeeName</td>
+
+                                    <td class="downtime-table__date">
+                                        @row.StartTime.ToString("MM/dd/yyyy h:mm tt")
+                                    </td>
+
+                                    <td class="downtime-table__duration">
+                                        @row.ElapsedDisplay
+                                    </td>
+
+                                    <td>
+                                        @(row.Costed ? "Costed" : "Not costed")
+                                    </td>
+                                </tr>
+                                        }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9"
+                                    class="downtime-table__empty">
+                                    No tool repairs or toolroom changeovers
+                                    are currently in process.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="downtime-results-card"
+                 aria-labelledby="waiting-downtimes-heading">
+
+            <div class="downtime-results-card__header">
+                <div>
+                    <p class="downtime-results-card__eyebrow">
+                        Toolroom queue
+                    </p>
+
+                    <h2 id="waiting-downtimes-heading">
+                        Waiting for the toolroom
+                    </h2>
+                </div>
+
+                <span class="downtime-results-card__count">
+                    @Model.Waiting.Count
+                    press@(Model.Waiting.Count == 1 ? "" : "es")
+                </span>
+            </div>
+
+            <div class="downtime-table-wrapper">
+                <table class="downtime-table">
+                    <thead>
+                        <tr>
+                            <th>Press</th>
+                            <th>Waiting for</th>
+                            <th>Tool</th>
+                            <th>Work order</th>
+                            <th>Part number</th>
+                            <th>Employee</th>
+                            <th>Waiting since</th>
+                            <th>Waiting time</th>
+                            <th>Planned</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Waiting.Count > 0)
+                        {
+                            @foreach (var row in Model.Waiting)
+                            {
+                                var statusClass =
+                                row.Status == "Waiting for Repair"
+                                ? "downtime-status--waiting-repair"
+                                : "downtime-status--waiting-changeover";
+
+                                <tr>
+                                    <td>
+                                        <strong>@row.WorkCenter</strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="downtime-status @statusClass">
+                                            @row.Status
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(row.Tool)
+                                                                    ? "—"
+                                                                    : row.Tool)
+                                                                           </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(row.WorkOrder)
+                                                                    ? "—"
+                                                                    : row.WorkOrder)
+                                                                                </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(row.PartNumber)
+                                                                    ? "—"
+                                                                    : row.PartNumber)
+                        </td>
+
+                                    <td>@row.EmployeeName</td>
+
+                                    <td class="downtime-table__date">
+                                        @row.StartTime.ToString("MM/dd/yyyy h:mm tt")
+                                    </td>
+
+                                    <td class="downtime-table__duration">
+                                        @row.ElapsedDisplay
+                                    </td>
+
+                                    <td>
+                                        @(row.Planned ? "Yes" : "No")
+                                    </td>
+                                </tr>
+                                        }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9"
+                                    class="downtime-table__empty">
+                                    No presses are currently waiting for
+                                    tool repair or changeover.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/downtimes.css"
+          asp-append-version="true" />
+}

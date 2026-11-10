@@ -25,6 +25,12 @@ namespace ToolLogix.Data
 
         public DbSet<DetailUsage> DetailUsages
             => Set<DetailUsage>();
+
+        public DbSet<SpareItem> SpareItems
+            => Set<SpareItem>();
+
+        public DbSet<InventoryTransaction> InventoryTransactions
+            => Set<InventoryTransaction>();
     }
 }
 

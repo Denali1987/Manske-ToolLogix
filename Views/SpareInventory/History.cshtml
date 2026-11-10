@@ -1,0 +1,173 @@
+﻿@model ToolLogix.Models.InventoryHistoryViewModel
+
+@{
+    ViewData["Title"] = "Inventory History";
+}
+
+<div class="spare-item-form-page inventory-history-page">
+    <header class="spare-item-form-header">
+        <div>
+            <p class="spare-item-form-header__eyebrow">
+                Toolroom inventory
+            </p>
+
+            <h1>Inventory History</h1>
+
+            <p>
+                Review quantity adjustments for detail
+                @Model.DetailNumber.
+            </p>
+        </div>
+
+        <a asp-controller="SpareInventory"
+           asp-action="Index"
+           class="spare-item-form-back">
+            ← Back to inventory
+        </a>
+    </header>
+
+    <section class="inventory-history-summary">
+        <div>
+            <span>Detail number</span>
+            <strong>@Model.DetailNumber</strong>
+        </div>
+
+        <div>
+            <span>Description</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Description)
+                                ? "No description"
+                                : Model.Description)
+            </strong>
+        </div>
+
+        <div>
+            <span>Current quantity</span>
+            <strong class="inventory-history-summary__quantity">
+                @Model.CurrentQuantity
+            </strong>
+        </div>
+
+        <div>
+            <span>Recorded adjustments</span>
+            <strong>@Model.Transactions.Count</strong>
+        </div>
+    </section>
+
+    <section class="spare-inventory-results">
+        <div class="spare-inventory-results__header">
+            <div>
+                <p class="spare-inventory-results__eyebrow">
+                    Adjustment log
+                </p>
+
+                <h2>Transaction history</h2>
+            </div>
+
+            <a asp-controller="SpareInventory"
+               asp-action="Adjust"
+               asp-route-id="@Model.SpareItemId"
+               class="spare-inventory-create-button">
+                Adjust Inventory
+            </a>
+        </div>
+
+        <div class="spare-inventory-table-wrapper">
+            <table class="spare-inventory-table inventory-history-table">
+                <thead>
+                    <tr>
+                        <th>Date and time</th>
+                        <th>Type</th>
+                        <th class="spare-inventory-table__number">
+                            Amount
+                        </th>
+                        <th class="spare-inventory-table__number">
+                            Previous
+                        </th>
+                        <th class="spare-inventory-table__number">
+                            New
+                        </th>
+                        <th>Adjusted by</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Transactions.Count > 0)
+                    {
+                        @foreach (var transaction in Model.Transactions)
+                        {
+                            var typeClass =
+                            transaction.AdjustmentType switch
+                            {
+                                "Add" => "inventory-transaction--add",
+                                "Remove" => "inventory-transaction--remove",
+                                _ => "inventory-transaction--set"
+                            };
+
+                            var quantityText =
+                            transaction.AdjustmentType switch
+                            {
+                                "Add" => $"+{transaction.Quantity}",
+                                "Remove" => $"-{transaction.Quantity}",
+                                _ => transaction.Quantity.ToString()
+                            };
+
+                            <tr>
+                                <td class="spare-inventory-table__date">
+                                    @transaction.AdjustedAt.ToLocalTime().ToString("MM/dd/yyyy h:mm tt")
+                                </td>
+
+                                <td>
+                                    <span class="inventory-transaction-type @typeClass">
+                                        @transaction.AdjustmentType
+                                    </span>
+                                </td>
+
+                                <td class="spare-inventory-table__number">
+                                    @quantityText
+                                </td>
+
+                                <td class="spare-inventory-table__number">
+                                    @transaction.PreviousQuantity
+                                </td>
+
+                                <td class="spare-inventory-table__number">
+                                    <strong>
+                                        @transaction.NewQuantity
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @transaction.AdjustedByName
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(transaction.Reason)
+                                                                ? "—"
+                                                                : transaction.Reason)
+                        </td>
+                    </tr>
+                                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7"
+                                class="spare-inventory-table__empty">
+                                No inventory adjustments have been recorded
+                                for this detail.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/spare-inventory.css"
+          asp-append-version="true" />
+}

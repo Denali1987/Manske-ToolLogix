@@ -303,6 +303,49 @@ namespace ToolLogix.Data.Migrations
                     b.ToTable("DetailUsages");
                 });
 
+            modelBuilder.Entity("ToolLogix.Models.InventoryTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AdjustedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AdjustedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdjustmentType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("NewQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PreviousQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("SpareItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpareItemId");
+
+                    b.ToTable("InventoryTransactions");
+                });
+
             modelBuilder.Entity("ToolLogix.Models.LaborEntry", b =>
                 {
                     b.Property<int>("Id")
@@ -364,6 +407,46 @@ namespace ToolLogix.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ShopAnnouncements");
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.SpareItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("DetailNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("LastUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MinimumQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuantityOnHand")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StorageLocation")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.ToTable("SpareItems");
                 });
 
             modelBuilder.Entity("ToolLogix.Models.WorkLog", b =>
@@ -474,6 +557,17 @@ namespace ToolLogix.Data.Migrations
                     b.Navigation("WorkLog");
                 });
 
+            modelBuilder.Entity("ToolLogix.Models.InventoryTransaction", b =>
+                {
+                    b.HasOne("ToolLogix.Models.SpareItem", "SpareItem")
+                        .WithMany()
+                        .HasForeignKey("SpareItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SpareItem");
+                });
+
             modelBuilder.Entity("ToolLogix.Models.LaborEntry", b =>
                 {
                     b.HasOne("ToolLogix.Models.WorkLog", "WorkLog")
@@ -483,6 +577,15 @@ namespace ToolLogix.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("WorkLog");
+                });
+
+            modelBuilder.Entity("ToolLogix.Models.SpareItem", b =>
+                {
+                    b.HasOne("ToolLogix.Models.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetId");
+
+                    b.Navigation("Asset");
                 });
 
             modelBuilder.Entity("ToolLogix.Models.WorkLog", b =>

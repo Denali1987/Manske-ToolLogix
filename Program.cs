@@ -70,5 +70,7 @@ if (app.Environment.IsDevelopment())
     await DbInitializer.SeedAssetsAsync(context);
 }
 
+await DatabaseSeeder.SeedSpareInventoryAsync(app.Services);
+
 app.Run();
 

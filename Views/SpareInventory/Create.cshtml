@@ -1,0 +1,146 @@
+﻿@model ToolLogix.Models.CreateSpareItemViewModel
+
+@{
+    ViewData["Title"] = "Add Spare Item";
+}
+
+<div class="spare-item-form-page">
+    <header class="spare-item-form-header">
+        <div>
+            <p class="spare-item-form-header__eyebrow">
+                Toolroom inventory
+            </p>
+
+            <h1>Add Spare Item</h1>
+
+            <p>
+                Create a new spare tooling inventory record.
+            </p>
+        </div>
+
+        <a asp-controller="SpareInventory"
+           asp-action="Index"
+           class="spare-item-form-back">
+            ← Back to inventory
+        </a>
+    </header>
+
+    <form asp-controller="SpareInventory"
+          asp-action="Create"
+          method="post"
+          class="spare-item-form">
+
+        <div asp-validation-summary="ModelOnly"
+             class="spare-item-form-validation">
+        </div>
+
+        <section class="spare-item-form-section">
+            <div class="spare-item-form-section__header">
+                <p>Identification</p>
+                <h2>Spare detail information</h2>
+            </div>
+
+            <div class="spare-item-form-grid">
+                <div class="spare-item-form-field">
+                    <label asp-for="DetailNumber"></label>
+
+                    <input asp-for="DetailNumber"
+                           placeholder="Example: 298"
+                           autofocus />
+
+                    <span asp-validation-for="DetailNumber"></span>
+                </div>
+
+                <div class="spare-item-form-field">
+                    <label asp-for="AssetId"></label>
+
+                    <select asp-for="AssetId"
+                            asp-items="Model.AssetOptions">
+                        <option value="">Unassigned or shared</option>
+                    </select>
+
+                    <span asp-validation-for="AssetId"></span>
+                </div>
+
+                <div class="spare-item-form-field spare-item-form-field--full">
+                    <label asp-for="Description"></label>
+
+                    <textarea asp-for="Description"
+                              rows="3"
+                              placeholder="Describe the spare detail"></textarea>
+
+                    <span asp-validation-for="Description"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="spare-item-form-section">
+            <div class="spare-item-form-section__header">
+                <p>Stock control</p>
+                <h2>Location and quantity</h2>
+            </div>
+
+            <div class="spare-item-form-grid spare-item-form-grid--three">
+                <div class="spare-item-form-field">
+                    <label asp-for="StorageLocation"></label>
+
+                    <input asp-for="StorageLocation"
+                           placeholder="Example: Cabinet A, Drawer 12" />
+
+                    <span asp-validation-for="StorageLocation"></span>
+                </div>
+
+                <div class="spare-item-form-field">
+                    <label asp-for="QuantityOnHand"></label>
+
+                    <input asp-for="QuantityOnHand"
+                           type="number"
+                           min="0"
+                           max="100000"
+                           step="1" />
+
+                    <span asp-validation-for="QuantityOnHand"></span>
+                </div>
+
+                <div class="spare-item-form-field">
+                    <label asp-for="MinimumQuantity"></label>
+
+                    <input asp-for="MinimumQuantity"
+                           type="number"
+                           min="0"
+                           max="100000"
+                           step="1" />
+
+                    <span asp-validation-for="MinimumQuantity"></span>
+
+                    <small>
+                        The item will be marked low stock at or below this quantity.
+                    </small>
+                </div>
+            </div>
+        </section>
+
+        <div class="spare-item-form-actions">
+            <a asp-controller="SpareInventory"
+               asp-action="Index"
+               class="spare-item-form-cancel">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="spare-item-form-submit">
+                Save Spare Item
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/spare-inventory.css"
+          asp-append-version="true" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

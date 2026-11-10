@@ -1,0 +1,156 @@
+﻿@model ToolLogix.Models.AdjustSpareItemViewModel
+
+@{
+    ViewData["Title"] = "Adjust Inventory";
+}
+
+<div class="spare-item-form-page spare-adjustment-page">
+    <header class="spare-item-form-header">
+        <div>
+            <p class="spare-item-form-header__eyebrow">
+                Toolroom inventory
+            </p>
+
+            <h1>Adjust Inventory</h1>
+
+            <p>
+                Add, remove, or correct the quantity on hand.
+            </p>
+        </div>
+
+        <a asp-controller="SpareInventory"
+           asp-action="Index"
+           class="spare-item-form-back">
+            ← Back to inventory
+        </a>
+    </header>
+
+    <section class="inventory-adjustment-summary">
+        <div>
+            <span>Detail number</span>
+            <strong>@Model.DetailNumber</strong>
+        </div>
+
+        <div>
+            <span>Description</span>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Description)
+                                ? "No description"
+                                : Model.Description)
+            </strong>
+        </div>
+
+        <div>
+            <span>Current quantity</span>
+            <strong class="inventory-adjustment-summary__quantity">
+                @Model.CurrentQuantity
+            </strong>
+        </div>
+    </section>
+
+    <form asp-controller="SpareInventory"
+          asp-action="Adjust"
+          asp-route-id="@Model.Id"
+          method="post"
+          class="spare-item-form">
+
+        <input asp-for="Id"
+               type="hidden" />
+
+        <input asp-for="DetailNumber"
+               type="hidden" />
+
+        <input asp-for="Description"
+               type="hidden" />
+
+        <input asp-for="CurrentQuantity"
+               type="hidden" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="spare-item-form-validation">
+        </div>
+
+        <section class="spare-item-form-section">
+            <div class="spare-item-form-section__header">
+                <p>Quantity adjustment</p>
+                <h2>Choose the type and amount</h2>
+            </div>
+
+            <div class="spare-item-form-grid">
+                <div class="spare-item-form-field">
+                    <label asp-for="AdjustmentType"></label>
+
+                    <select asp-for="AdjustmentType">
+                        <option value="Add">
+                            Add to current quantity
+                        </option>
+
+                        <option value="Remove">
+                            Remove from current quantity
+                        </option>
+
+                        <option value="Set">
+                            Set exact quantity
+                        </option>
+                    </select>
+
+                    <span asp-validation-for="AdjustmentType"></span>
+                </div>
+
+                <div class="spare-item-form-field">
+                    <label asp-for="Quantity"></label>
+
+                    <input asp-for="Quantity"
+                           type="number"
+                           min="0"
+                           max="100000"
+                           step="1" />
+
+                    <span asp-validation-for="Quantity"></span>
+
+                    <div class="spare-item-form-field spare-item-form-field--full">
+                        <label asp-for="Reason"></label>
+
+                        <textarea asp-for="Reason"
+                                  rows="3"
+                                  placeholder="Why is this inventory being adjusted?"></textarea>
+
+                        <span asp-validation-for="Reason"></span>
+
+                        <small>
+                            Examples: received new stock, used during repair,
+                            physical count correction, or damaged item.
+                        </small>
+                    </div>
+
+                    <small>
+                        Add and Remove require at least 1. Set allows 0.
+                    </small>
+                </div>
+            </div>
+        </section>
+
+        <div class="spare-item-form-actions">
+            <a asp-controller="SpareInventory"
+               asp-action="Index"
+               class="spare-item-form-cancel">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="spare-item-form-submit">
+                Save Adjustment
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/spare-inventory.css"
+          asp-append-version="true" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

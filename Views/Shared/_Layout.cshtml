@@ -85,13 +85,24 @@
 
             <a class="sidenav__link"
                asp-area=""
-               asp-controller="Home"
-               asp-action="Inventory">
+               asp-controller="SpareInventory"
+               asp-action="Index">
                 <img src="~/images/spare-inventory.svg"
                      asp-append-version="true"
                      alt=""
                      class="sidenav__icon" />
                 <span>Spare Inventory</span>
+            </a>
+
+            <a class="sidenav__link"
+                asp-area=""
+                asp-controller="Downtimes"
+                asp-action="Index">
+                <img src="~/images/down-time.svg"
+                    asp-append-version="true"
+                    alt=""
+                    class="sidenav__icon" />
+                <span>Downtimes</span>
             </a>
 
             <div class="sidenav__divider"></div>

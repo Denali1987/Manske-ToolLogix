@@ -1,0 +1,250 @@
+﻿@model ToolLogix.Models.SpareInventoryIndexViewModel
+
+@{
+    ViewData["Title"] = "Spare Inventory";
+}
+
+<div class="spare-inventory-page">
+    <header class="spare-inventory-header">
+        <div>
+            <p class="spare-inventory-header__eyebrow">
+                Toolroom inventory
+            </p>
+
+            <h1>Spare Inventory</h1>
+
+            <p>
+                Search, monitor, and maintain replacement tooling details.
+            </p>
+        </div>
+
+        <a class="spare-inventory-create-button"
+           asp-controller="SpareInventory"
+           asp-action="Create">
+            + Add Spare Item
+        </a>
+    </header>
+
+    @if (TempData["InventoryMessage"] is string inventoryMessage)
+    {
+        <div class="spare-inventory-message"
+             role="status">
+            @inventoryMessage
+        </div>
+    }
+
+    <section class="spare-inventory-summary"
+             aria-label="Inventory summary">
+
+        <article class="inventory-summary-card">
+            <span>Total details</span>
+            <strong>@Model.TotalItemCount</strong>
+        </article>
+
+        <article class="inventory-summary-card">
+            <span>Total quantity</span>
+            <strong>@Model.TotalQuantityOnHand</strong>
+        </article>
+
+        <article class="inventory-summary-card inventory-summary-card--warning">
+            <span>Low stock</span>
+            <strong>@Model.LowStockCount</strong>
+        </article>
+
+        <article class="inventory-summary-card inventory-summary-card--danger">
+            <span>Out of stock</span>
+            <strong>@Model.OutOfStockCount</strong>
+        </article>
+    </section>
+
+    <section class="spare-inventory-filters"
+             aria-labelledby="inventory-filter-heading">
+
+        <h2 id="inventory-filter-heading">
+            Filter inventory
+        </h2>
+
+        <form asp-controller="SpareInventory"
+              asp-action="Index"
+              method="get">
+
+            <div class="spare-inventory-filter-grid">
+                <div class="spare-inventory-filter-field">
+                    <label asp-for="SearchTerm"></label>
+
+                    <input asp-for="SearchTerm"
+                           type="search"
+                           placeholder="Detail, description, or location" />
+                </div>
+
+                <div class="spare-inventory-filter-field">
+                    <label asp-for="AssetId"></label>
+
+                    <select asp-for="AssetId"
+                            asp-items="Model.AssetOptions">
+                        <option value="">All assets</option>
+                    </select>
+                </div>
+
+                <div class="spare-inventory-filter-field">
+                    <label asp-for="StockStatus"></label>
+
+                    <select asp-for="StockStatus">
+                        <option value="">All stock levels</option>
+                        <option value="In Stock">In Stock</option>
+                        <option value="Low Stock">Low Stock</option>
+                        <option value="Out of Stock">Out of Stock</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="spare-inventory-filter-actions">
+                <button type="submit">
+                    Apply filters
+                </button>
+
+                <a asp-controller="SpareInventory"
+                   asp-action="Index">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </section>
+
+    <section class="spare-inventory-results"
+             aria-labelledby="inventory-results-heading">
+
+        <div class="spare-inventory-results__header">
+            <div>
+                <p class="spare-inventory-results__eyebrow">
+                    Inventory records
+                </p>
+
+                <h2 id="inventory-results-heading">
+                    Spare details
+                </h2>
+            </div>
+
+            <span class="spare-inventory-results__count">
+                @Model.SpareItems.Count
+                record@(Model.SpareItems.Count == 1 ? "" : "s")
+            </span>
+        </div>
+
+        <div class="spare-inventory-table-wrapper">
+            <table class="spare-inventory-table">
+                <thead>
+                    <tr>
+                        <th>Detail number</th>
+                        <th>Description</th>
+                        <th>Asset</th>
+                        <th>Location</th>
+                        <th class="spare-inventory-table__number">
+                            On hand
+                        </th>
+                        <th class="spare-inventory-table__number">
+                            Minimum
+                        </th>
+                        <th>Status</th>
+                        <th>Last updated</th>
+                        <th class="spare-inventory-table__actions">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.SpareItems.Count > 0)
+                    {
+                        @foreach (var item in Model.SpareItems)
+                        {
+                            var statusClass = item.StockStatus switch
+                            {
+                                "Out of Stock" => "inventory-status--danger",
+                                "Low Stock" => "inventory-status--warning",
+                                _ => "inventory-status--available"
+                            };
+
+                            <tr>
+                                <td>
+                                    <strong>@item.DetailNumber</strong>
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(item.Description)
+                                                                ? "—"
+                                                                : item.Description)
+                                                                               </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(item.AssetNumber)
+                                                                ? "Unassigned"
+                                                                : item.AssetNumber)
+                                                                               </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(item.StorageLocation)
+                                                                ? "—"
+                                                                : item.StorageLocation)
+                        </td>
+
+                                <td class="spare-inventory-table__number">
+                                    @item.QuantityOnHand
+                                </td>
+
+                                <td class="spare-inventory-table__number">
+                                    @item.MinimumQuantity
+                                </td>
+
+                                <td>
+                                    <span class="inventory-status @statusClass">
+                                        @item.StockStatus
+                                    </span>
+                                </td>
+
+                                <td class="spare-inventory-table__date">
+                                    @item.LastUpdatedAt.ToLocalTime().ToString("MM/dd/yyyy")
+                                </td>
+
+                                <td class="spare-inventory-table__actions">
+                                    <a asp-controller="SpareInventory"
+                                       asp-action="History"
+                                       asp-route-id="@item.Id">
+                                        History
+                                    </a>
+                                    
+                                    <a asp-controller="SpareInventory"
+                                       asp-action="Edit"
+                                       asp-route-id="@item.Id">
+                                        Edit
+                                    </a>
+
+                                    <a asp-controller="SpareInventory"
+                                       asp-action="Adjust"
+                                       asp-route-id="@item.Id">
+                                        Adjust
+                                    </a>
+                                </td>
+                            </tr>
+                                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9"
+                                class="spare-inventory-table__empty">
+                                No spare inventory matches the selected filters.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/pages/spare-inventory.css"
+          asp-append-version="true" />
+}
