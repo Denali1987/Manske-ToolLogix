@@ -1,5 +1,7 @@
 ﻿@model ToolLogix.Models.DowntimeDashboardViewModel
 
+@using System.Text.Json
+
 @{
     ViewData["Title"] = "Downtimes";
 }
@@ -110,6 +112,159 @@
                 </ul>
             </aside>
         }
+
+        <section class="downtime-analytics"
+                 aria-labelledby="downtime-analytics-heading">
+            <div class="downtime-analytics__header">
+                <div>
+                    <p class="downtime-results-card__eyebrow">Downtime analysis</p>
+                    <h2 id="downtime-analytics-heading">Where downtime is accumulating</h2>
+                    <p>Charted values are downtime hours for the selected codes, presses, and tools.</p>
+                </div>
+                <div class="downtime-analytics__totals">
+                    <span id="analytics-record-count">0 records</span>
+                    <strong id="analytics-total-hours">0.00 hours</strong>
+                </div>
+            </div>
+
+            <div class="downtime-analytics-controls">
+                <div class="downtime-analytics-control">
+                    <label for="analytics-group-by">Group chart by</label>
+                    <select id="analytics-group-by">
+                        <option value="tool" selected>Tool / die</option>
+                        <option value="workCenter">Work center</option>
+                        <option value="employeeName">Employee</option>
+                        <option value="downtimeReasonCode">Downtime code</option>
+                    </select>
+                </div>
+                <div class="downtime-analytics-control">
+                    <label for="analytics-top-count">Show</label>
+                    <select id="analytics-top-count">
+                        <option value="5">Top 5</option>
+                        <option value="10">Top 10</option>
+                        <option value="15" selected>Top 15</option>
+                        <option value="25">Top 25</option>
+                        <option value="50">Top 50</option>
+                    </select>
+                </div>
+                <div class="downtime-analytics-control downtime-analytics-control--wide">
+                    <label for="analytics-work-centers">Work centers <small>Leave blank for all</small></label>
+                    <select id="analytics-work-centers" multiple size="5">
+                        @foreach (var workCenter in Model.WorkCenterOptions)
+                        {
+                            <option value="@workCenter">@workCenter</option>
+                        }
+                    </select>
+                </div>
+                <div class="downtime-analytics-control downtime-analytics-control--wide">
+                    <label for="analytics-tools">Tools / dies <small>Leave blank for all</small></label>
+                    <select id="analytics-tools" multiple size="5">
+                        @foreach (var tool in Model.ToolOptions)
+                        {
+                            <option value="@tool">@tool</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <details class="downtime-code-filter" open>
+                <summary>Downtime codes <span id="analytics-selected-code-count"></span></summary>
+                <div class="downtime-code-filter__actions">
+                    <button type="button" id="analytics-select-active-codes">Active toolroom codes</button>
+                    <button type="button" id="analytics-select-all-codes">Select all</button>
+                    <button type="button" id="analytics-clear-codes">Clear</button>
+                    <button type="button" id="analytics-reset-filters">Reset all filters</button>
+                </div>
+                <div class="downtime-code-filter__grid">
+                    @foreach (var option in Model.CodeOptions)
+                    {
+                        <label>
+                            @if (option.SelectedByDefault)
+                            {
+                                <input type="checkbox"
+                                       value="@option.Value"
+                                       data-analytics-code
+                                       data-default-selected="true"
+                                       checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox"
+                                       value="@option.Value"
+                                       data-analytics-code
+                                       data-default-selected="false" />
+                            }
+                            <span>@option.Label</span>
+                        </label>
+                    }
+                </div>
+            </details>
+
+            <div class="downtime-bar-chart"
+                 id="downtime-bar-chart"
+                 aria-label="Downtime hours bar chart"></div>
+        </section>
+
+        <section class="downtime-results-card downtime-analytics-table-card"
+                 aria-labelledby="downtime-detail-heading">
+            <div class="downtime-results-card__header">
+                <div>
+                    <p class="downtime-results-card__eyebrow">Selected records</p>
+                    <h2 id="downtime-detail-heading">Downtime detail</h2>
+                </div>
+                <label class="downtime-table-search">
+                    <span>Search table</span>
+                    <input id="analytics-table-search" type="search" placeholder="Search visible columns" />
+                </label>
+            </div>
+            <div class="downtime-table-wrapper">
+                <table class="downtime-table downtime-analytics-table">
+                    <thead>
+                        <tr>
+                            <th><button type="button" data-sort-key="workCenter">Work center</button></th>
+                            <th><button type="button" data-sort-key="tool">Tool / die</button></th>
+                            <th><button type="button" data-sort-key="downtimeReasonCode">Code</button></th>
+                            <th><button type="button" data-sort-key="downtimeReason">Reason</button></th>
+                            <th><button type="button" data-sort-key="employeeName">Employee</button></th>
+                            <th><button type="button" data-sort-key="workOrder">Work order</button></th>
+                            <th><button type="button" data-sort-key="partNumber">Part number</button></th>
+                            <th><button type="button" data-sort-key="durationMinutes" data-sort-type="number">Hours</button></th>
+                            <th><button type="button" data-sort-key="startTime" data-sort-type="date">Start</button></th>
+                            <th><button type="button" data-sort-key="endTime" data-sort-type="date">End</button></th>
+                            <th><button type="button" data-sort-key="planned">Planned</button></th>
+                            <th><button type="button" data-sort-key="costed">Costed</button></th>
+                        </tr>
+                        <tr class="downtime-table-filters">
+                            <th><input type="search" data-column-filter="workCenter" aria-label="Filter work center" /></th>
+                            <th><input type="search" data-column-filter="tool" aria-label="Filter tool" /></th>
+                            <th><input type="search" data-column-filter="downtimeReasonCode" aria-label="Filter downtime code" /></th>
+                            <th><input type="search" data-column-filter="downtimeReason" aria-label="Filter reason" /></th>
+                            <th><input type="search" data-column-filter="employeeName" aria-label="Filter employee" /></th>
+                            <th><input type="search" data-column-filter="workOrder" aria-label="Filter work order" /></th>
+                            <th><input type="search" data-column-filter="partNumber" aria-label="Filter part number" /></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>
+                                <select data-column-filter="planned" aria-label="Filter planned status">
+                                    <option value="">All</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </th>
+                            <th>
+                                <select data-column-filter="costed" aria-label="Filter costed status">
+                                    <option value="">All</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="downtime-analytics-table-body"></tbody>
+                </table>
+            </div>
+        </section>
 
         <section class="downtime-results-card"
                  aria-labelledby="active-downtimes-heading">
@@ -329,4 +484,26 @@
     <link rel="stylesheet"
           href="~/css/pages/downtimes.css"
           asp-append-version="true" />
+}
+
+@if (Model.AnalyticsRecords.Count > 0)
+{
+    var analyticsJson = JsonSerializer.Serialize(
+        Model.AnalyticsRecords,
+        new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
+    <script id="downtime-analytics-data" type="application/json">
+        @Html.Raw(analyticsJson)
+    </script>
+}
+
+@section Scripts {
+    @if (Model.AnalyticsRecords.Count > 0)
+    {
+        <script src="~/js/pages/downtime-analytics.js"
+                asp-append-version="true"></script>
+    }
 }

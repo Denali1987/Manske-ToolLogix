@@ -24,7 +24,53 @@ namespace ToolLogix.Models
 
         public List<DowntimeRowViewModel> Waiting { get; set; } = new();
 
+        public List<DowntimeAnalyticsRowViewModel> AnalyticsRecords { get; set; } = new();
+
+        public List<DowntimeFilterOptionViewModel> CodeOptions { get; set; } = new();
+
+        public List<string> WorkCenterOptions { get; set; } = new();
+
+        public List<string> ToolOptions { get; set; } = new();
+
         public List<string> Warnings { get; set; } = new();
+    }
+
+    public class DowntimeFilterOptionViewModel
+    {
+        public string Value { get; set; } = string.Empty;
+
+        public string Label { get; set; } = string.Empty;
+
+        public bool SelectedByDefault { get; set; }
+    }
+
+    public class DowntimeAnalyticsRowViewModel
+    {
+        public string WorkCenter { get; set; } = string.Empty;
+
+        public string? WorkOrder { get; set; }
+
+        public string? PartNumber { get; set; }
+
+        public string? Tool { get; set; }
+
+        public string DowntimeReason { get; set; } = string.Empty;
+
+        public string DowntimeReasonCode { get; set; } = string.Empty;
+
+        public double DurationMinutes { get; set; }
+
+        public DateTime StartTime { get; set; }
+
+        public DateTime EndTime { get; set; }
+
+        public bool Planned { get; set; }
+
+        public bool Costed { get; set; }
+
+        public string? SapBucket { get; set; }
+
+        public string EmployeeName { get; set; } = string.Empty;
     }
 
     public class DowntimeRowViewModel

@@ -89,6 +89,8 @@ namespace ToolLogix.Controllers
                 viewModel.AsOfTime = records.Max(
                     record => record.LocalEndTime);
 
+                PopulateAnalytics(viewModel, records);
+
                 // Use only the latest record for each press/work center.
                 var latestRecords = records
                     .GroupBy(
@@ -231,6 +233,69 @@ namespace ToolLogix.Controllers
             }
 
             return null;
+        }
+
+        private static void PopulateAnalytics(
+            DowntimeDashboardViewModel viewModel,
+            List<DowntimeCsvRecord> records)
+        {
+            viewModel.AnalyticsRecords = records
+                .Select(record => new DowntimeAnalyticsRowViewModel
+                {
+                    WorkCenter = record.WorkCenter,
+                    WorkOrder = record.WorkOrder,
+                    PartNumber = record.PartNumber,
+                    Tool = record.Tool,
+                    DowntimeReason = record.DowntimeReason,
+                    DowntimeReasonCode = record.DowntimeReasonCode,
+                    DurationMinutes = record.DurationMinutes,
+                    StartTime = record.LocalStartTime,
+                    EndTime = record.LocalEndTime,
+                    Planned = record.Planned == 1,
+                    Costed = record.Costed,
+                    SapBucket = record.SAPBucket,
+                    EmployeeName = record.EmployeeName
+                })
+                .ToList();
+
+            viewModel.CodeOptions = records
+                .GroupBy(
+                    record => record.DowntimeReasonCode,
+                    StringComparer.OrdinalIgnoreCase)
+                .Select(group => new DowntimeFilterOptionViewModel
+                {
+                    Value = group.Key,
+                    Label = $"{group.Key} ({group.Count()})",
+                    SelectedByDefault = IsDefaultLaborCode(group.Key)
+                })
+                .OrderByDescending(option => option.SelectedByDefault)
+                .ThenBy(option => option.Value)
+                .ToList();
+
+            viewModel.WorkCenterOptions = records
+                .Select(record => record.WorkCenter)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(value => value)
+                .ToList();
+
+            viewModel.ToolOptions = records
+                .Select(record => record.Tool)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(value => value!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(value => value)
+                .ToList();
+        }
+
+        private static bool IsDefaultLaborCode(string code)
+        {
+            return code.Contains(
+                       "Tool Repair",
+                       StringComparison.OrdinalIgnoreCase) ||
+                   code.Contains(
+                       "Toolroom Setup / CO",
+                       StringComparison.OrdinalIgnoreCase);
         }
 
         private static void AddDataWarnings(
