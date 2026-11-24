@@ -343,3 +343,49 @@
         transform: translateY(-1px);
         box-shadow: 0 8px 20px rgba(227, 38, 54, 0.5);
     }
+
+.asset-search-toolbar {
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    background: var(--surface-background);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 8px;
+    box-shadow: inset 10px 0 18px -16px rgba(227, 38, 54, 0.9), 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+    .asset-search-toolbar .asset-search {
+        display: grid;
+        grid-template-columns: auto minmax(240px, 1fr) auto;
+        align-items: center;
+        gap: 14px;
+    }
+
+.asset-search-toolbar__label {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.asset-search-toolbar .asset-search__input {
+    min-height: 44px;
+}
+
+.asset-search-toolbar__hint {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+    .asset-search-toolbar .asset-search {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .asset-search-toolbar__hint {
+        white-space: normal;
+    }
+}

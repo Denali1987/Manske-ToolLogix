@@ -308,6 +308,243 @@ namespace ToolLogix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var workLog = await _context.WorkLogs
+                .AsNoTracking()
+                .Include(item => item.LaborEntries)
+                .Include(item => item.DetailsUsed)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (workLog == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new EditWorkLogViewModel
+            {
+                Id = workLog.Id,
+                WorkDate = workLog.WorkDate,
+                AssetId = workLog.AssetId,
+                WorkOrderNumber = workLog.WorkOrderNumber,
+                Issue = workLog.Issue,
+                WorkDone = workLog.WorkDone,
+                Notes = workLog.Notes,
+
+                LaborEntries = workLog.LaborEntries
+                    .OrderBy(entry => entry.Id)
+                    .Select(entry => new LaborEntryInputModel
+                    {
+                        UserId = entry.UserId,
+                        Hours = entry.Hours
+                    })
+                    .ToList(),
+
+                DetailsUsed = workLog.DetailsUsed
+                    .OrderBy(detail => detail.Id)
+                    .Select(detail => new DetailUsageInputModel
+                    {
+                        DetailNumber = detail.DetailNumber,
+                        Description = detail.Description,
+                        UsedByUserId = detail.UsedByUserId,
+                        Quantity = detail.Quantity
+                    })
+                    .ToList()
+            };
+
+            if (viewModel.LaborEntries.Count == 0)
+            {
+                viewModel.LaborEntries.Add(
+                    new LaborEntryInputModel());
+            }
+
+            if (viewModel.DetailsUsed.Count == 0)
+            {
+                viewModel.DetailsUsed.Add(
+                    new DetailUsageInputModel());
+            }
+
+            await PopulateCreateOptionsAsync(viewModel);
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+             int id,
+            EditWorkLogViewModel viewModel)
+        {
+            if (id != viewModel.Id)
+            {
+                return BadRequest();
+            }
+
+            var workLog = await _context.WorkLogs
+                .Include(item => item.LaborEntries)
+                .Include(item => item.DetailsUsed)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (workLog == null)
+            {
+                return NotFound();
+            }
+
+            if (viewModel.AssetId.HasValue)
+            {
+                var assetExists = await _context.Assets
+                    .AnyAsync(asset =>
+                        asset.Id == viewModel.AssetId.Value);
+
+                if (!assetExists)
+                {
+                    ModelState.AddModelError(
+                        nameof(viewModel.AssetId),
+                        "The selected asset could not be found.");
+                }
+            }
+
+            var completedLaborEntries = viewModel.LaborEntries
+                .Where(entry =>
+                    !string.IsNullOrWhiteSpace(entry.UserId) &&
+                    entry.Hours.HasValue)
+                .ToList();
+
+            var incompleteLaborEntries = viewModel.LaborEntries
+                .Any(entry =>
+                    string.IsNullOrWhiteSpace(entry.UserId) !=
+                    !entry.Hours.HasValue);
+
+            if (incompleteLaborEntries)
+            {
+                ModelState.AddModelError(
+                    nameof(viewModel.LaborEntries),
+                    "Each labor entry must include both an employee and hours.");
+            }
+
+            if (completedLaborEntries.Count == 0)
+            {
+                ModelState.AddModelError(
+                    nameof(viewModel.LaborEntries),
+                    "Add at least one labor entry.");
+            }
+
+            var incompleteDetailEntries = viewModel.DetailsUsed
+                .Any(detail =>
+                    string.IsNullOrWhiteSpace(detail.DetailNumber) &&
+                    !string.IsNullOrWhiteSpace(detail.Description));
+
+            if (incompleteDetailEntries)
+            {
+                ModelState.AddModelError(
+                    nameof(viewModel.DetailsUsed),
+                    "Each detail entry must include a detail number.");
+            }
+
+            var detailsWithoutEmployee = viewModel.DetailsUsed
+                .Any(detail =>
+                    !string.IsNullOrWhiteSpace(detail.DetailNumber) &&
+                    string.IsNullOrWhiteSpace(detail.UsedByUserId));
+
+            if (detailsWithoutEmployee)
+            {
+                ModelState.AddModelError(
+                    nameof(viewModel.DetailsUsed),
+                    "Select the employee who took each detail.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await PopulateCreateOptionsAsync(viewModel);
+                return View(viewModel);
+            }
+
+            workLog.WorkDate = viewModel.WorkDate;
+            workLog.AssetId = viewModel.AssetId!.Value;
+            workLog.WorkOrderNumber =
+                viewModel.WorkOrderNumber?.Trim();
+            workLog.Issue = viewModel.Issue.Trim();
+            workLog.WorkDone = viewModel.WorkDone.Trim();
+            workLog.Notes = viewModel.Notes?.Trim();
+
+            _context.LaborEntries.RemoveRange(
+                workLog.LaborEntries);
+
+            _context.DetailUsages.RemoveRange(
+                workLog.DetailsUsed);
+
+            workLog.LaborEntries = completedLaborEntries
+                .Select(entry => new LaborEntry
+                {
+                    UserId = entry.UserId!,
+                    Hours = entry.Hours!.Value
+                })
+                .ToList();
+
+            workLog.DetailsUsed = viewModel.DetailsUsed
+                .Where(detail =>
+                    !string.IsNullOrWhiteSpace(
+                        detail.DetailNumber))
+                .Select(detail => new DetailUsage
+                {
+                    DetailNumber =
+                        detail.DetailNumber!.Trim(),
+
+                    Description =
+                        detail.Description?.Trim(),
+
+                    UsedByUserId =
+                        detail.UsedByUserId,
+
+                    Quantity =
+                        detail.Quantity
+                })
+                .ToList();
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                $"Work log for {workLog.WorkDate:MM/dd/yyyy} was updated.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var workLog = await _context.WorkLogs
+                .Include(item => item.LaborEntries)
+                .Include(item => item.DetailsUsed)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (workLog == null)
+            {
+                return NotFound();
+            }
+
+            var workDate = workLog.WorkDate;
+
+            _context.LaborEntries.RemoveRange(
+                workLog.LaborEntries);
+
+            _context.DetailUsages.RemoveRange(
+                workLog.DetailsUsed);
+
+            _context.WorkLogs.Remove(workLog);
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                $"Work log for {workDate:MM/dd/yyyy} was deleted.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task PopulateCreateOptionsAsync(
             CreateWorkLogViewModel viewModel)
         {

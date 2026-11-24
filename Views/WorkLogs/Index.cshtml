@@ -179,7 +179,26 @@
                                 </td>
 
                                 <td class="work-log-table__actions">
-                                    <span>Coming soon</span>
+                                    <div class="work-log-row-actions">
+                                        <a asp-controller="WorkLogs"
+                                           asp-action="Edit"
+                                           asp-route-id="@workLog.Id"
+                                           class="work-log-row-action work-log-row-action--edit">
+                                            Edit
+                                        </a>
+
+                                        <form asp-controller="WorkLogs"
+                                              asp-action="Delete"
+                                              asp-route-id="@workLog.Id"
+                                              method="post"
+                                              onsubmit="return confirm('Delete this work log? This action cannot be undone.');">
+
+                                            <button type="submit"
+                                                    class="work-log-row-action work-log-row-action--delete">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                                         }

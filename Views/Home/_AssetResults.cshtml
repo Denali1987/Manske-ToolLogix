@@ -1,0 +1,89 @@
+﻿@model ToolLogix.Models.AssetSearchViewModel
+
+@* This partial view is used to display the results of an asset search
+It is included in the Assets.cshtml view.*@
+
+<section class="asset-results"
+         aria-labelledby="asset-results-heading"
+         aria-live="polite">
+
+    <div class="asset-results__header">
+        <div>
+            <p class="asset-results__eyebrow">
+                @(Model.HasSearched ? "Search results" : "Asset library")
+            </p>
+
+            <h2 id="asset-results-heading">
+                @if (Model.HasSearched)
+                {
+                    <text>Assets matching “@Model.SearchTerm”</text>
+                }
+                else
+                {
+                    <text>All assets</text>
+                }
+            </h2>
+        </div>
+
+        <span class="asset-results__count">
+            @Model.Results.Count
+            asset@(Model.Results.Count == 1 ? "" : "s")
+        </span>
+    </div>
+
+    @if (Model.Results.Count > 0)
+    {
+        <div class="asset-results__list">
+            @foreach (var asset in Model.Results)
+            {
+                <article class="asset-result-card">
+                    <div class="asset-result-card__main">
+                        <span class="asset-result-card__number">
+                            @asset.AssetNumber
+                        </span>
+
+                        <a class="asset-result-card__link"
+                           asp-controller="Assets"
+                           asp-action="Details"
+                           asp-route-id="@asset.Id">
+                            Open asset
+                        </a>
+
+                        <h3>@asset.Description</h3>
+
+                        <div class="asset-result-card__details">
+                            <span>
+                                <strong>Part:</strong>
+                                @(asset.PartNumber ?? "Not assigned")
+                            </span>
+
+                            <span>
+                                <strong>Press:</strong>
+                                @(asset.PressNumber ?? "Not assigned")
+                            </span>
+
+                            <span>
+                                <strong>Location:</strong>
+                                @(asset.Location ?? "Not assigned")
+                            </span>
+                        </div>
+                    </div>
+
+                    <span class="asset-result-card__status">
+                        @asset.Status
+                    </span>
+                </article>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="asset-results__empty">
+            <h3>No assets found</h3>
+
+            <p>
+                Check the search value and try again.
+            </p>
+        </div>
+    }
+</section>

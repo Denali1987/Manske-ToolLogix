@@ -1,5 +1,33 @@
 ﻿/* ToolLogix Home page and shop announcements */
 
+.home-top-banner {
+    position: fixed;
+    z-index: 1020;
+    top: 0;
+    right: 0;
+    left: var(--sidenav-width);
+    height: var(--header-height);
+    overflow: hidden;
+    background: #080d13;
+    border-bottom: 1px solid rgba(227, 38, 54, 0.35);
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+}
+
+.home-top-banner__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.home-top-banner__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 90deg, rgba(8, 13, 20, 0.45), transparent 45%, rgba(8, 13, 20, 0.12) );
+    pointer-events: none;
+}
+
 .announcement-page {
     width: min(1040px, 100%);
     margin: 0 auto;

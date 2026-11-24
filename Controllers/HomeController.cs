@@ -51,38 +51,72 @@ namespace ToolLogix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Assets(string? assetNumber)
-        {
+        public async Task<IActionResult> Assets(string? assetNumber) {
+            string search = assetNumber?.Trim() ?? string.Empty;
+            var query = _context.Assets.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(search)) {
+                query = query.Where(asset =>
+                    asset.AssetNumber.Contains(search) ||
+                    asset.Description.Contains(search) ||
+                    (asset.PartNumber != null &&
+                     asset.PartNumber.Contains(search)) ||
+                    (asset.PressNumber != null &&
+                     asset.PressNumber.Contains(search)));}
             var viewModel = new AssetSearchViewModel
             {
-                SearchTerm = assetNumber?.Trim() ?? string.Empty,
-                HasSearched = !string.IsNullOrWhiteSpace(assetNumber)
-            };
-
-            if (viewModel.HasSearched)
-            {
-                string search = viewModel.SearchTerm;
-
-                viewModel.Results = await _context.Assets
-                    .AsNoTracking()
-                    .Where(asset =>
-                        asset.AssetNumber.Contains(search) ||
-                        asset.Description.Contains(search) ||
-                        (asset.PartNumber != null &&
-                         asset.PartNumber.Contains(search)) ||
-                        (asset.PressNumber != null &&
-                         asset.PressNumber.Contains(search)))
+                SearchTerm = search,
+                HasSearched = !string.IsNullOrWhiteSpace(search),
+                Results = await query
                     .OrderBy(asset => asset.AssetNumber)
-                    .Take(50)
-                    .ToListAsync();
-            }
-
+                    .ToListAsync()
+            };
             return View(viewModel);
         }
 
         public IActionResult WorkLogs()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchAssets(string? assetNumber)
+        {
+            string search = assetNumber?.Trim() ?? string.Empty;
+
+            var query = _context.Assets
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(asset =>
+                    asset.AssetNumber.Contains(search) ||
+                    asset.Description.Contains(search) ||
+                    (asset.PartNumber != null &&
+                     asset.PartNumber.Contains(search)) ||
+                    (asset.PressNumber != null &&
+                     asset.PressNumber.Contains(search)));
+            }
+
+            var results = string.IsNullOrWhiteSpace(search)
+                ? await query
+                    .OrderBy(asset => asset.AssetNumber)
+                    .ToListAsync()
+                : await query
+                    .OrderByDescending(asset =>
+                        asset.AssetNumber == search)
+                    .ThenByDescending(asset =>
+                        asset.AssetNumber.StartsWith(search))
+                    .ThenBy(asset => asset.AssetNumber)
+                    .ToListAsync();
+
+            var viewModel = new AssetSearchViewModel
+            {
+                SearchTerm = search,
+                HasSearched = !string.IsNullOrWhiteSpace(search),
+                Results = results
+            };
+
+            return PartialView("_AssetResults", viewModel);
         }
 
         [ResponseCache(
